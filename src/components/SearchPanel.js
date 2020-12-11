@@ -13,7 +13,7 @@ export default function SearchPanel() {
   ];
 
   return (
-    <div className="search-panel-grid">
+    <div className="search-panel search-panel-grid">
       <div className="search-bar">
         <Search />
       </div>

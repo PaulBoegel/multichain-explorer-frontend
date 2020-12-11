@@ -19,6 +19,12 @@
   grid-column: 3 / 4;
 }
 
+.filter-options {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
 @media (min-width: 850px) {
   .filter-panel-grid {
     grid-template-columns: 170px 0.1% 79.5%;
