@@ -6,7 +6,91 @@ import RelationsPanel from "./RelationsPanel";
 import SearchPanel from "./SearchPanel";
 
 export default function Explorer() {
-  const entityId = 0;
+  const entityId = 1;
+
+  const relations = [
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+    { txid: "123123" },
+  ];
+
   return (
     <div className="explorer-grid">
       <div className="border-top"></div>
@@ -18,7 +102,7 @@ export default function Explorer() {
       <div className="second-horizontal-border"></div>
       <DetailPanel visibleId={entityId} />
       <div className="graph-panel"></div>
-      <RelationsPanel visibleId={entityId} />
+      <RelationsPanel visibleId={entityId} relations={relations} />
       <div className="border-bottom"></div>
     </div>
   );

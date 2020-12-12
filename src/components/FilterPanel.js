@@ -44,6 +44,7 @@ export default function FilterPanel() {
         <Dropdown
           arrowColor={arrowColor}
           options={filterOptions}
+          optionsColor={"#d28e79"}
           onChange={handleDropdownChange}
         />
         ;

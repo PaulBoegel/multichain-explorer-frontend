@@ -18,9 +18,7 @@
   border: none;
   cursor: pointer;
 }
-#N {
-  fill: #67889b;
-}
+
 .dropdown-arrow {
   z-index: 1;
   position: absolute;
@@ -41,10 +39,6 @@
   transform: rotate(180deg);
 }
 
-option {
-  background-color: #000;
-}
-
 @media (min-width: 850px) {
   .dropdown {
     font-size: 20px;
@@ -53,7 +47,7 @@ option {
     height: 25px;
     width: 25px;
     top: 12px;
-    right: 20px;
+    right: 7px;
     background-position: 5px 3px;
     background-size: 15px;
   }

@@ -1,0 +1,121 @@
+.transaction-details-grid {
+  display: grid;
+  grid-template-rows: auto 0.1vw auto;
+  grid-template-columns: 1vw auto 1vw;
+  color: #eee;
+  font-size: 1.4vw;
+}
+
+.transaction-details-grid label {
+  font-weight: bold;
+}
+
+.transaction-details-border-left {
+  grid-row: 1 / 4;
+  grid-column: 1 / 2;
+}
+
+.transaction-details-top-section {
+  display: grid;
+  grid-template-columns: 8vw 15vw 8vw 15vw 8vw 15vw;
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  text-align: left;
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  margin-left: 1vw;
+}
+
+.transaction-details-bottom-section {
+  display: grid;
+  grid-template-columns: 8vw 15vw 8vw 15vw auto auto;
+  grid-row: 3 / 4;
+  grid-column: 2 / 3;
+  text-align: left;
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  margin-left: 1vw;
+}
+
+.transacton-details-label-txid {
+  grid-column: 1 / 2;
+}
+
+.transaction-details-value-txid {
+  grid-column: 2 / 3;
+}
+
+.transacton-details-label-block {
+  grid-column: 3 / 4;
+}
+
+.transaction-details-value-block {
+  grid-column: 4 / 5;
+}
+
+.transacton-details-label-date {
+  grid-column: 5 / 6;
+}
+
+.transaction-details-value-date {
+  grid-column: 6 / 7;
+}
+
+.transaction-details-divider {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  background-color: #eee;
+}
+
+.transacton-details-label-value {
+  grid-column: 1 / 2;
+}
+
+.transaction-details-value-value {
+  grid-column: 2 / 3;
+}
+
+.transacton-details-label-fee {
+  grid-column: 3 / 4;
+}
+
+.transaction-details-value-fee {
+  grid-column: 4 / 5;
+}
+
+.transaction-details-border-right {
+  grid-row: 1 / 4;
+  grid-column: 3 / 4;
+}
+
+@media (min-width: 1300px) {
+  .transaction-details-grid {
+    display: grid;
+    grid-template-rows: auto 2px auto;
+    grid-template-columns: 13px auto 13px;
+    color: #eee;
+    font-size: 16px;
+  }
+
+  .transaction-details-top-section {
+    display: grid;
+    grid-template-columns: 100px 200px 100px 200px 100px 200px;
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+  }
+
+  .transaction-details-bottom-section {
+    display: grid;
+    grid-template-columns: 100px 200px 100px 200px auto auto;
+    grid-row: 3 / 4;
+    grid-column: 2 / 3;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+  }
+}

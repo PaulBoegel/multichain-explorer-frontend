@@ -19,7 +19,11 @@ export default function SearchPanel() {
       </div>
       <div className="search-border"></div>
       <div className="search-dropdown">
-        <Dropdown arrowColor={arrowColor} options={blockchainOptions} />
+        <Dropdown
+          arrowColor={arrowColor}
+          optionsColor={"#67889b"}
+          options={blockchainOptions}
+        />
       </div>
     </div>
   );

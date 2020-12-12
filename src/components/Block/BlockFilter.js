@@ -6,5 +6,5 @@ export default function BlockFilter({ visible }) {
   }, [visible]);
 
   if (!isVisible) return null;
-  return <div className="filter-options">BlockFilter</div>;
+  return <div className="filter-options"></div>;
 }

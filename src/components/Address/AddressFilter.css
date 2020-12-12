@@ -1,0 +1,72 @@
+.address-filter-grid {
+  display: grid;
+  grid-template-rows: 0.8vw auto 0.8vw;
+  grid-template-columns: 0.2vw auto 0.2vw auto;
+  font-size: 1.4vw;
+}
+
+.address-filter-grid input[type="text"] {
+  width: 10vw;
+  height: 2vw;
+  border: none;
+  border-radius: 15px;
+  margin-right: 1vw;
+  margin-left: 1vw;
+  color: #666;
+  padding-left: 5px;
+}
+
+.address-filter-grid label {
+  color: #eee;
+}
+
+.address-filter-border-top {
+  grid-row: 1 / 2;
+  grid-column: 1 / 5;
+}
+
+.address-filter-border-left {
+  grid-row: 2 / 3;
+  grid-column: 1 / 2;
+  background-color: #eee;
+}
+
+.address-filter-from {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  margin-top: 8px;
+}
+
+.address-filter-border-middle {
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+  background-color: #eee;
+}
+
+.address-filter-to {
+  grid-row: 2 / 3;
+  grid-column: 4 / 5;
+  margin-top: 8px;
+}
+
+.address-filter-border-top {
+  grid-row: 3 / 4;
+  grid-column: 1 / 5;
+}
+
+@media (min-width: 900px) {
+  .address-filter-grid {
+    grid-template-rows: 7px auto 7px;
+    grid-template-columns: 1.5px auto 1.5px auto;
+    font-size: 16px;
+  }
+
+  .address-filter-grid input[type="text"] {
+    width: 85px;
+    height: 17px;
+    border: none;
+    border-radius: 15px;
+    margin-right: 8.5px;
+    margin-left: 8.5px;
+  }
+}

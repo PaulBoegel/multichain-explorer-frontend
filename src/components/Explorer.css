@@ -2,7 +2,7 @@
   height: 100vh;
   width: 100%;
   display: grid;
-  grid-template-rows: 1vw 6vw 0.2vw 6vw 0.2vw 20vw auto 20vw 1vw;
+  grid-template-rows: 1vw 6vw 0.2vw 6vw 0.2vw 8vw auto 20vw 1vw;
   grid-template-columns: 1% 98% 1%;
 }
 .border-left {
@@ -71,7 +71,7 @@
 
 @media (min-width: 850px) {
   .explorer-grid {
-    grid-template-rows: 8px 50px 2px 50px 2px 165px auto 165px 8px;
+    grid-template-rows: 8px 50px 2px 50px 2px 100px auto 165px 8px;
     grid-template-columns: 8px auto 8px;
   }
 }

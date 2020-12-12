@@ -1,0 +1,97 @@
+.address-details-grid {
+  display: grid;
+  grid-template-rows: auto 0.1vw auto;
+  grid-template-columns: 1vw auto 1vw;
+  color: #ccc;
+  font-size: 1.4vw;
+}
+
+.address-details-grid label {
+  font-weight: bold;
+}
+
+.address-details-border-left {
+  grid-row: 1 / 4;
+  grid-column: 1 / 2;
+}
+
+.address-details-top-section {
+  display: grid;
+  grid-template-columns: 8vw 15vw 8vw 15vw auto auto;
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  text-align: left;
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  margin-left: 1vw;
+}
+
+.address-details-bottom-section {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  grid-row: 3 / 4;
+  grid-column: 2 / 3;
+  text-align: left;
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  margin-left: 1vw;
+}
+
+.transacton-details-label-address {
+  grid-column: 1 / 2;
+}
+
+.address-details-value-address {
+  grid-column: 2 / 3;
+}
+
+.transacton-details-label-balance {
+  grid-column: 3 / 4;
+}
+
+.address-details-value-balance {
+  grid-column: 4 / 5;
+}
+
+.address-details-divider {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  background-color: #ccc;
+}
+
+.address-details-border-right {
+  grid-row: 1 / 4;
+  grid-column: 3 / 4;
+}
+
+@media (min-width: 1300px) {
+  .address-details-grid {
+    display: grid;
+    grid-template-rows: auto 2px auto;
+    grid-template-columns: 13px auto 13px;
+    color: #ccc;
+    font-size: 16px;
+  }
+
+  .address-details-top-section {
+    display: grid;
+    grid-template-columns: 100px 200px 100px 200px 100px 200px;
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+  }
+
+  .address-details-bottom-section {
+    display: grid;
+    grid-template-columns: 100px 200px 100px 200px auto auto;
+    grid-row: 3 / 4;
+    grid-column: 2 / 3;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+  }
+}
