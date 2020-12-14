@@ -3,14 +3,8 @@ import "./SearchPanel.css";
 import Search from "./Search";
 import Dropdown from "./Dropdown";
 
-export default function SearchPanel() {
+export default function SearchPanel({ onDropdownChanged, blockchainOptions }) {
   const arrowColor = "rgb(103, 136, 155)";
-  const blockchainOptions = [
-    { value: 0, name: "Bitcoin" },
-    { value: 1, name: "Litecoin" },
-    { value: 2, name: "Dash" },
-    { value: 3, name: "Ethereum" },
-  ];
 
   return (
     <div className="search-panel search-panel-grid">
@@ -20,6 +14,7 @@ export default function SearchPanel() {
       <div className="search-border"></div>
       <div className="search-dropdown">
         <Dropdown
+          onChange={onDropdownChanged}
           arrowColor={arrowColor}
           optionsColor={"#67889b"}
           options={blockchainOptions}

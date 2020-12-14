@@ -5,60 +5,13 @@ import AddressRelations from "./Address/AddressRelations";
 import "./RelationsPanel.css";
 
 export default function RelationsPanel({ visibleId, relations }) {
-  const [blockVisible, setBlockVisible] = useState(true);
+  const [blockVisible, setBlockVisible] = useState(false);
   const [transactionVisible, setTransactionVisible] = useState(false);
   const [addressVisible, setAddressVisible] = useState(false);
-  const [containers, setContainers] = useState([]);
-  const [containerCount, setContainerCount] = useState(
-    window.innerWidth > 850 ? Math.floor(window.innerWidth / 200) : 4
-  );
-
-  const updateContainers = () => {
-    const containers = fillContainer({ relations });
-    setContainers(containers);
-  };
-
-  const fillContainer = ({ relations = [] }) => {
-    const containers = [];
-
-    const relationsInContainer = Math.floor(relations.length / containerCount);
-    const remindRelations = relations.length % containerCount;
-    let relationsIndex = 0;
-    for (let index = 0; index < containerCount; index++) {
-      containers.push(
-        relations.slice(relationsIndex, relationsIndex + relationsInContainer)
-      );
-      relationsIndex += relationsInContainer;
-    }
-
-    for (let index = 0; index < remindRelations; index++) {
-      if (remindRelations <= 0) break;
-      containers[index].push(
-        ...relations.slice(relationsIndex, relationsIndex + 1)
-      );
-    }
-
-    return containers;
-  };
 
   useEffect(() => {
     setEntityVisibility(parseInt(visibleId));
   }, [visibleId]);
-
-  useEffect(() => {
-    updateContainers();
-  }, [relations]);
-
-  useEffect(() => {
-    if (containers.length === containerCount) return;
-    updateContainers();
-  });
-
-  window.addEventListener("resize", () => {
-    setContainerCount(
-      window.innerWidth > 850 ? Math.floor(window.innerWidth / 200) : 4
-    );
-  });
 
   const setEntityVisibility = (entityId) => {
     switch (entityId) {
@@ -82,10 +35,10 @@ export default function RelationsPanel({ visibleId, relations }) {
   return (
     <div className="relations-panel">
       <div className="relations-panel-scroller">
-        <BlockRelations visible={blockVisible} />
+        <BlockRelations visible={blockVisible} relations={relations} />
         <TransactionRelations
           visible={transactionVisible}
-          containers={containers}
+          relations={relations}
         />
         <AddressRelations visible={addressVisible} />
       </div>

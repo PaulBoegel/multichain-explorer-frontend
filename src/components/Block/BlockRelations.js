@@ -1,11 +1,95 @@
 import React, { useEffect, useState } from "react";
+import "./BlockRelations.css";
 
-export default function BlockRelations({ visible }) {
+export default function BlockRelations({ visible, relations }) {
   const [isVisible, setIsVisible] = useState(null);
+  const [gridTemplateString, setGridTemplateString] = useState();
+  const [blockContainer, setBlockContainer] = useState([]);
+  const [containerCount, setContainerCount] = useState(
+    window.innerWidth > 850 ? Math.floor(window.innerWidth * 0.005) : 4
+  );
+
+  const fillContainer = ({ relations = [] }) => {
+    const containers = [];
+
+    const relationsInContainer = Math.floor(relations.length / containerCount);
+    const remindRelations = relations.length % containerCount;
+    let relationsIndex = 0;
+    for (let index = 0; index < containerCount; index++) {
+      containers.push(
+        relations.slice(relationsIndex, relationsIndex + relationsInContainer)
+      );
+      relationsIndex += relationsInContainer;
+    }
+
+    for (let index = 0; index < remindRelations; index++) {
+      if (remindRelations <= 0) break;
+      containers[index].push(
+        ...relations.slice(relationsIndex, relationsIndex + 1)
+      );
+    }
+
+    return containers;
+  };
+
   useEffect(() => {
     setIsVisible(visible);
   }, [visible]);
 
+  useEffect(() => {
+    if (!isVisible) return null;
+    if (!relations) return null;
+    const containers = fillContainer({ relations });
+    let gridTemplateString = "";
+    const blockContainer = [];
+    containers.forEach((container) => {
+      blockContainer.push(
+        container.map((tx) => {
+          const { txid, ...data } = tx;
+          return { txid: txid.substring(0, 15) + "...", data };
+        })
+      );
+      gridTemplateString += "auto ";
+    });
+    setBlockContainer(blockContainer);
+    setGridTemplateString(gridTemplateString);
+  }, [relations]);
+
+  window.addEventListener("resize", () => {
+    setContainerCount(
+      window.innerWidth > 850 ? Math.floor(window.innerWidth / 200) : 4
+    );
+  });
+
   if (!isVisible) return null;
-  return <div>Block</div>;
+  if (!relations) return null;
+  return (
+    <>
+      <div className="relationsTitle">Transactions</div>
+      <div
+        className="block-relations-grid"
+        style={{ gridTemplateColumns: gridTemplateString }}
+      >
+        {blockContainer.map((container, key) => {
+          return (
+            <div
+              key={key}
+              style={{ gridColumn: `${key + 1} / ${key + 2}` }}
+              className="relations-container block-relations-container"
+            >
+              <ul>
+                {container.map((block, key) => {
+                  return (
+                    <li key={key}>
+                      <a href="#">{block.txid}</a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
 }
