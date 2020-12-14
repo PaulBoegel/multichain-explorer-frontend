@@ -15,7 +15,7 @@ const blockchainOptions = [
 ];
 
 export default function Explorer() {
-  const entityId = 2;
+  const entityId = 1;
   const [chainId, setChainId] = useState(0);
   const [searchHeight, setSearchHeight] = useState(490214);
   const [searchTxid, setSearchTxid] = useState(
