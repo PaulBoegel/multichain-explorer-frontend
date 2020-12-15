@@ -17,7 +17,7 @@
 
 .transaction-details-top-section {
   display: grid;
-  grid-template-columns: 8vw 15vw 8vw 15vw 8vw 15vw;
+  grid-template-columns: 10vw 17vw 10vw 17vw 6vw 17vw;
   grid-row: 1 / 2;
   grid-column: 2 / 3;
   text-align: left;
@@ -28,7 +28,7 @@
 
 .transaction-details-bottom-section {
   display: grid;
-  grid-template-columns: 8vw 15vw 8vw 15vw auto auto;
+  grid-template-columns: 10vw 17vw 10vw 17vw 6vw 17vw;
   grid-row: 3 / 4;
   grid-column: 2 / 3;
   text-align: left;
@@ -67,20 +67,28 @@
   background-color: #eee;
 }
 
-.transacton-details-label-value {
+.transacton-details-label-input-total {
   grid-column: 1 / 2;
 }
 
-.transaction-details-value-value {
+.transaction-details-value-input-total {
   grid-column: 2 / 3;
 }
 
-.transacton-details-label-fee {
+.transacton-details-label-output-total {
   grid-column: 3 / 4;
 }
 
-.transaction-details-value-fee {
+.transaction-details-value-output-total {
   grid-column: 4 / 5;
+}
+
+.transacton-details-label-fee {
+  grid-column: 5 / 6;
+}
+
+.transaction-details-value-fee {
+  grid-column: 6 / 7;
 }
 
 .transaction-details-border-right {
@@ -99,7 +107,7 @@
 
   .transaction-details-top-section {
     display: grid;
-    grid-template-columns: 100px 200px 100px 200px 100px 200px;
+    grid-template-columns: 120px 200px 120px 200px 80px 220px;
     grid-row: 1 / 2;
     grid-column: 2 / 3;
     text-align: left;
@@ -110,7 +118,7 @@
 
   .transaction-details-bottom-section {
     display: grid;
-    grid-template-columns: 100px 200px 100px 200px auto auto;
+    grid-template-columns: 120px 200px 120px 200px 80px 220px;
     grid-row: 3 / 4;
     grid-column: 2 / 3;
     text-align: left;

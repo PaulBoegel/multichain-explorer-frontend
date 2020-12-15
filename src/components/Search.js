@@ -1,8 +1,14 @@
-import React from 'react';
-import './Search.css';
+import React from "react";
+import "./Search.css";
 
-export default function Search() {
+export default function Search({ onSearchTextChanged, onKeyDown }) {
   return (
-    <input type="text" placeholder="Search ..." className="search-input" />
+    <input
+      type="text"
+      onKeyDown={onKeyDown}
+      onChange={onSearchTextChanged}
+      placeholder="Search ..."
+      className="search-input"
+    />
   );
 }

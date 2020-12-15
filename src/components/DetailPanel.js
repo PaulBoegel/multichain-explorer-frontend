@@ -35,7 +35,7 @@ export default function DetailPanel({ visibleId, details }) {
     <div className="detail-panel">
       <BlockDetail visible={blockVisible} details={details} />
       <TransactionDetail visible={transactionVisible} details={details} />
-      <AddressDetail visible={addressVisible} />
+      <AddressDetail visible={addressVisible} details={details} />
     </div>
   );
 }

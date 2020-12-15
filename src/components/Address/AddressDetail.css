@@ -17,7 +17,7 @@
 
 .address-details-top-section {
   display: grid;
-  grid-template-columns: 8vw 15vw 8vw 15vw auto auto;
+  grid-template-columns: 8vw 35vw 8vw 15vw auto auto;
   grid-row: 1 / 2;
   grid-column: 2 / 3;
   text-align: left;
@@ -75,7 +75,7 @@
 
   .address-details-top-section {
     display: grid;
-    grid-template-columns: 100px 200px 100px 200px 100px 200px;
+    grid-template-columns: 100px 450px 100px 200px 100px 200px;
     grid-row: 1 / 2;
     grid-column: 2 / 3;
     text-align: left;

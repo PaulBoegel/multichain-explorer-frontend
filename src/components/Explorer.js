@@ -15,42 +15,93 @@ const blockchainOptions = [
 ];
 
 export default function Explorer() {
-  const entityId = 1;
+  const [entityId, setEntityId] = useState(0);
+  const [searchText, setSearchText] = useState("");
   const [chainId, setChainId] = useState(0);
-  const [searchHeight, setSearchHeight] = useState(490214);
+  const [searchHeight, setSearchHeight] = useState(0);
   const [searchTxid, setSearchTxid] = useState(
-    "6f9f63267a68a4358d38fe00f5b8bc782596588b6370f2b7c0086d5a4d05043f"
+    "1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4"
   );
   const [searchAddress, setSearchAddress] = useState(
-    "XyrVX6MkETLwdGHAr1sdk9N9pXKoVAvvBa"
+    "XdvCaucrgDmzzrfjQoDs2fnAfbZhnptokT"
   );
 
   const searchForDetails = ({ blockList }) => {
     const block = findBlock(blockList);
-    if (!block) return;
     switch (entityId) {
       case 1:
+        if (!block) return;
         const transaction = block.tx.find(
           (transaction) => transaction.txid === searchTxid
         );
         if (!transaction) return;
-        let value = 0;
-        console.log(transaction);
-        transaction.from.forEach((address) => (value += address.value));
-        transaction.to.forEach((address) => (value += address.value));
+        let fee = transaction.fee;
+        let inputTotal = transaction.from.reduce(
+          (prev, curr) => prev + curr.value,
+          0
+        );
+        let outputTotal = transaction.to.reduce(
+          (prev, curr) => prev + curr.value,
+          0
+        );
+        if (!transaction.fee) fee = inputTotal - outputTotal;
         return {
           txid: transaction.txid,
           block: block.height,
-          value,
+          inputTotal,
+          outputTotal,
+          fee,
         };
       case 2:
-        return {};
+        const transactionPool = [];
+        const fromArray = [];
+        const toArray = [];
+        let balance = 0;
+        blockList.forEach((block) => transactionPool.push(...block.tx));
+        transactionPool.forEach((transaction) => {
+          fromArray.push(
+            ...transaction.from.map((addressObj) => ({
+              txid: transaction.txid,
+              ...addressObj,
+            }))
+          );
+          toArray.push(
+            ...transaction.to.map((addressObj) => ({
+              txid: transaction.txid,
+              ...addressObj,
+            }))
+          );
+        });
+
+        relations.push([], []);
+        fromArray.forEach((from) => {
+          if (!from) return;
+          const relation = from.address?.find((adr) => adr === searchAddress);
+          if (!relation) return;
+          relations[0].push({ txid: from.txid, value: from.value });
+        });
+
+        toArray.forEach((to) => {
+          if (!to) return;
+          const relation = to.address?.find((adr) => adr === searchAddress);
+          if (!relation) return;
+          relations[1].push({ txid: to.txid, value: to.value });
+        });
+
+        balance += relations[0].reduce((prev, curr) => prev + curr.value, 0);
+        balance -= relations[1].reduce((prev, curr) => prev + curr.value, 0);
+
+        return {
+          address: searchAddress,
+          balance,
+        };
       default:
+        if (!block) return;
         return {
           hash: block.hash,
           height: block.height,
           mined: block.mined,
-          parent: block.parent,
+          parent: block.parent ? block.parent : "",
           transactionCount: block.tx.length,
         };
     }
@@ -96,19 +147,16 @@ export default function Explorer() {
           if (!from) return;
           const relation = from.address?.find((adr) => adr === searchAddress);
           if (!relation) return;
-          relations[0].push(from.txid);
+          relations[0].push({ txid: from.txid, value: from.value });
         });
 
         toArray.forEach((to) => {
           if (!to) return;
           const relation = to.address?.find((adr) => adr === searchAddress);
           if (!relation) return;
-          relations[1].push(to.txid);
+          relations[1].push({ txid: to.txid, value: to.value });
         });
-
-        console.log(relations);
-
-        break;
+        return relations;
       default:
         block = findBlock(blockList);
         if (block) {
@@ -171,6 +219,14 @@ export default function Explorer() {
     setChainId(parseInt(event.target.value));
   };
 
+  const onSearchTextChanged = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  const onSearchInputKeyDown = (event) => {
+    //if (event.keyCode === 13)
+  };
+
   const CallBlocks = () => {
     const { query, variables } = getEntityQuery(entityId);
     const { loading, data } = useQuery(query, {
@@ -197,6 +253,8 @@ export default function Explorer() {
       <SearchPanel
         blockchainOptions={blockchainOptions}
         onDropdownChanged={onSearchDropdownChanged}
+        onSearchTextChanged={onSearchTextChanged}
+        onSearchInputKeyDown={onSearchInputKeyDown}
       />
       <div className="first-horizontal-border"></div>
       <FilterPanel />

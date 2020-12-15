@@ -2,7 +2,7 @@
   display: grid;
   grid-template-rows: auto 0.1vw auto;
   grid-template-columns: 1vw auto 1vw;
-  color: #ccc;
+  color: #eee;
   font-size: 1.4vw;
 }
 
@@ -64,7 +64,7 @@
 .block-details-divider {
   grid-row: 2 / 3;
   grid-column: 2 / 3;
-  background-color: #ccc;
+  background-color: #eee;
 }
 
 .transacton-details-label-parent {
@@ -93,7 +93,7 @@
     display: grid;
     grid-template-rows: auto 2px auto;
     grid-template-columns: 13px auto 13px;
-    color: #ccc;
+    color: #eee;
     font-size: 16px;
   }
 

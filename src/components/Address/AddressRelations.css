@@ -1,100 +1,102 @@
-.transaction-relations-grid {
+.address-relations-grid {
   display: grid;
   grid-template-columns: auto 0.2vw auto;
 }
 
-.transaction-relations-from {
+.address-relations-in {
   grid-column: 1 / 2;
 }
 
-.transaction-relations-divider {
+.address-relations-divider {
   grid-column: 2 / 3;
   background-color: #eee;
 }
 
-.transaction-relations-to {
+.address-relations-out {
   grid-column: 3 / 4;
 }
 
-.transaction-relations-from-grid {
+.address-relations-in-grid {
   padding-left: 1vw;
   padding-right: 1vw;
   display: grid;
 }
 
-.transaction-relations-to-grid {
+.address-relations-out-grid {
   padding-left: 1vw;
   padding-right: 1vw;
   display: grid;
 }
 
-.transaction-relations-container {
+.address-relations-container {
   border-right: 0.2vw solid #eee;
   margin-top: 1vw;
 }
 
-.transaction-relations-container:last-of-type {
+.address-relations-container:last-of-type {
   border-right: none;
 }
 
-.transaction-relations-container ul:first-child {
+.address-relations-container ul:first-child {
   border-top: 0.2vw solid #eee;
   padding-top: 2vw;
 }
 
-.transaction-relations-container ul {
+.address-relations-container ul {
   padding-left: 1vw;
   text-align: left;
 }
 
-.transaction-relations-container li {
+.address-relations-container li {
   display: grid;
+  grid-template-columns: 30vw 0.2vw 5vw;
   list-style: none;
-  grid-template-columns: auto 0.2vw 15vw;
   font-size: 1.2vw;
+  width: 0px;
 }
 
-.transaction-relation-link {
+.address-relation-link {
   grid-column: 1 / 2;
+  margin-right: 4vw;
 }
 
-.transaction-relation-li-border {
+.address-relation-li-border {
   grid-column: 2 / 3;
   background-color: #eee;
 }
 
-.transaction-relation-value {
+.address-relation-value {
   grid-column: 3 / 4;
   margin-left: 4vw;
   color: #eee;
 }
 
 @media (min-width: 1000px) {
-  .transaction-relations-grid {
+  .address-relations-grid {
     grid-template-columns: auto 2px auto;
   }
-  .transaction-relations-grid {
+  .address-relations-grid {
     padding-left: 12px;
     padding-right: 12px;
   }
-  .transaction-relations-container {
+  .address-relations-container {
     border-right: 2px solid #eee;
     margin-top: 10px;
   }
 
-  .transaction-relations-container ul:first-child {
+  .address-relations-container ul:first-child {
     border-top: 2px solid #eee;
     padding-top: 20px;
   }
 
-  .transaction-relations-container ul {
+  .address-relations-container ul {
     padding-left: 10px;
   }
 }
 
 @media (min-width: 1300px) {
-  .transaction-relations-container li {
-    grid-template-columns: auto 2px 15vw;
+  .address-relations-container li {
+    grid-template-columns: 450px 2px 5vw;
     font-size: 16px;
   }
 }

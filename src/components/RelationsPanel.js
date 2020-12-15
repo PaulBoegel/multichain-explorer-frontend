@@ -40,7 +40,7 @@ export default function RelationsPanel({ visibleId, relations }) {
           visible={transactionVisible}
           relations={relations}
         />
-        <AddressRelations visible={addressVisible} />
+        <AddressRelations visible={addressVisible} relations={relations} />
       </div>
     </div>
   );

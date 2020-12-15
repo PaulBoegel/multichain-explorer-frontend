@@ -28,10 +28,20 @@ export default function TransactionDetail({ visible, details }) {
       </div>
       <div className="transaction-details-divider"></div>
       <div className="transaction-details-bottom-section">
-        <label className="transacton-details-label-value">Value: </label>
-        <div className="transaction-details-value-value">{details.value}</div>
-        {/* <label className="transacton-details-label-fee">Fee: </label>
-        <div className="transaction-details-value-fee">213</div> */}
+        <label className="transacton-details-label-value-input-total">
+          Input Total:{" "}
+        </label>
+        <div className="transaction-details-value-input-total">
+          {details.inputTotal}
+        </div>
+        <label className="transacton-details-label-output-total">
+          Output Total:{" "}
+        </label>
+        <div className="transaction-details-value-output-total">
+          {details.outputTotal}
+        </div>
+        <label className="transacton-details-label-fee">Fee: </label>
+        <div className="transaction-details-value-fee">{details.fee}</div>
       </div>
       <div className="transaction-details-border-right"></div>
     </div>
