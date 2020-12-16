@@ -7,11 +7,13 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 
+const serviceUrl = "http://localhost:4000/graphql";
+
 //Initializing Apollo Client
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: serviceUrl,
   }),
   credentials: "same-origin",
 });
@@ -21,7 +23,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <ApolloProvider client={client}>
-          <Explorer />
+          <Explorer serviceUrl={serviceUrl} />
         </ApolloProvider>
       </header>
     </div>

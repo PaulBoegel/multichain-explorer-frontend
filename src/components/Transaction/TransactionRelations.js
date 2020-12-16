@@ -1,30 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./TransactionRelations.css";
 
-export default function TransactionRelations({ visible, relations }) {
+export default function TransactionRelations({
+  visible,
+  relations,
+  onRelationClicked,
+}) {
   const [isVisible, setIsVisible] = useState(null);
   const [fromContainer, setFromContainer] = useState([]);
   const [toContainer, setToContainer] = useState([]);
 
   const formatContainerStrings = ({ containers }) => {
-    let formatedContainer = [];
-    // containers.forEach((container) => {
-    //   if (container.length === 0) {
-    //     formatedContainer.push([]);
-    //     return;
-    //   }
-
-    // formatedContainer.push(
-    //   ...container.map((addressObj) => {
-    //     const { address } = addressObj;
-    //     return address.map(
-    //       (addressString) => addressString.substring(0, 15) + "..."
-    //     );
-    //   })
-    // );
-    // templateString += "auto ";
-    //});
-
     return containers;
   };
 
@@ -57,7 +43,6 @@ export default function TransactionRelations({ visible, relations }) {
 
   useEffect(() => {
     if (!relations || relations.length === 0) return null;
-    if (!isVisible) return null;
     const fromContainer = fillContainer({
       relations: relations[0],
     });
@@ -96,6 +81,9 @@ export default function TransactionRelations({ visible, relations }) {
                               key={key}
                               className="transaction-relation-link"
                               href="#"
+                              data-id={address}
+                              data-entity={2}
+                              onClick={onRelationClicked}
                             >
                               {address}
                             </a>
@@ -138,6 +126,9 @@ export default function TransactionRelations({ visible, relations }) {
                               key={key}
                               className="transaction-relation-link"
                               href="#"
+                              data-id={address}
+                              data-entity={2}
+                              onClick={onRelationClicked}
                             >
                               {address}
                             </a>

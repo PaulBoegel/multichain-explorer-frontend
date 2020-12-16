@@ -12,10 +12,12 @@ export const BLOCKS = gql`
         from {
           address
           value
+          coinbase
         }
         to {
           address
           value
+          coinbase
         }
       }
     }
@@ -34,10 +36,12 @@ export const TRANSACTIONS = gql`
         from {
           address
           value
+          coinbase
         }
         to {
           address
           value
+          coinbase
         }
       }
     }
@@ -56,12 +60,20 @@ export const ADDRESS = gql`
         from {
           address
           value
+          coinbase
         }
         to {
           address
           value
+          coinbase
         }
       }
     }
+  }
+`;
+
+export const SEARCH = gql`
+  query searchEntity($chainId: Int, $searchString: String) {
+    searchEntity(chainId: $chainId, searchString: $searchString)
   }
 `;

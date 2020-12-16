@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./BlockRelations.css";
 
-export default function BlockRelations({ visible, relations }) {
+export default function BlockRelations({
+  visible,
+  relations,
+  onRelationClicked,
+}) {
   const [isVisible, setIsVisible] = useState(null);
   const [gridTemplateString, setGridTemplateString] = useState();
   const [blockContainer, setBlockContainer] = useState([]);
@@ -37,7 +41,6 @@ export default function BlockRelations({ visible, relations }) {
   }, [visible]);
 
   useEffect(() => {
-    if (!isVisible) return null;
     if (!relations) return null;
     const containers = fillContainer({ relations });
     let gridTemplateString = "";
@@ -46,7 +49,7 @@ export default function BlockRelations({ visible, relations }) {
       blockContainer.push(
         container.map((tx) => {
           const { txid, ...data } = tx;
-          return { txid: txid.substring(0, 15) + "...", data };
+          return { txidShort: txid.substring(0, 15) + "...", txid, data };
         })
       );
       gridTemplateString += "auto ";
@@ -78,10 +81,17 @@ export default function BlockRelations({ visible, relations }) {
               className="relations-container block-relations-container"
             >
               <ul>
-                {container.map((block, key) => {
+                {container.map((transaction, key) => {
                   return (
                     <li key={key}>
-                      <a href="#">{block.txid}</a>
+                      <a
+                        href="#"
+                        data-id={transaction.txid}
+                        data-entity={1}
+                        onClick={onRelationClicked}
+                      >
+                        {transaction.txidShort}
+                      </a>
                     </li>
                   );
                 })}

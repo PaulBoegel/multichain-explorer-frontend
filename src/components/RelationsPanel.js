@@ -4,7 +4,13 @@ import TransactionRelations from "./Transaction/TransactionRelations";
 import AddressRelations from "./Address/AddressRelations";
 import "./RelationsPanel.css";
 
-export default function RelationsPanel({ visibleId, relations }) {
+export default function RelationsPanel({
+  visibleId,
+  blockRelations,
+  transactionRelations,
+  addressRelations,
+  onRelationClicked,
+}) {
   const [blockVisible, setBlockVisible] = useState(false);
   const [transactionVisible, setTransactionVisible] = useState(false);
   const [addressVisible, setAddressVisible] = useState(false);
@@ -35,12 +41,21 @@ export default function RelationsPanel({ visibleId, relations }) {
   return (
     <div className="relations-panel">
       <div className="relations-panel-scroller">
-        <BlockRelations visible={blockVisible} relations={relations} />
+        <BlockRelations
+          visible={blockVisible}
+          relations={blockRelations}
+          onRelationClicked={onRelationClicked}
+        />
         <TransactionRelations
           visible={transactionVisible}
-          relations={relations}
+          relations={transactionRelations}
+          onRelationClicked={onRelationClicked}
         />
-        <AddressRelations visible={addressVisible} relations={relations} />
+        <AddressRelations
+          visible={addressVisible}
+          relations={addressRelations}
+          onRelationClicked={onRelationClicked}
+        />
       </div>
     </div>
   );

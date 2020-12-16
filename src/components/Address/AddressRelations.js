@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./AddressRelations.css";
 
-export default function AddressRelations({ visible, relations }) {
+export default function AddressRelations({
+  visible,
+  relations,
+  onRelationClicked,
+}) {
   const [isVisible, setIsVisible] = useState(null);
-  const [outTemplateString, setToTemplateString] = useState("");
-  const [inTemplateString, setFromTemplateString] = useState();
   const [inContainer, setFromContainer] = useState([]);
   const [outContainer, setToContainer] = useState([]);
 
@@ -20,7 +22,8 @@ export default function AddressRelations({ visible, relations }) {
       formatedContainers.push(
         container.map((txObj) => {
           return {
-            txid: txObj.txid.substring(0, 40) + "...",
+            txidShort: txObj.txid.substring(0, 40) + "...",
+            txid: txObj.txid,
             value: txObj.value,
           };
         })
@@ -60,7 +63,6 @@ export default function AddressRelations({ visible, relations }) {
 
   useEffect(() => {
     if (!relations || relations.length === 0) return null;
-    if (!isVisible) return null;
     const inContainer = fillContainer({
       relations: relations[0],
     });
@@ -93,8 +95,14 @@ export default function AddressRelations({ visible, relations }) {
                   {container.map((tx, key) => {
                     return (
                       <li key={key}>
-                        <a className="address-relation-link" href="#">
-                          {tx.txid}
+                        <a
+                          className="address-relation-link"
+                          href="#"
+                          data-id={tx.txid}
+                          data-entity={1}
+                          onClick={onRelationClicked}
+                        >
+                          {tx.txidShort}
                         </a>
                         <div className="address-relation-li-border"></div>
                         <div className="address-relation-value">{tx.value}</div>
@@ -125,8 +133,14 @@ export default function AddressRelations({ visible, relations }) {
                   {container.map((tx, key) => {
                     return (
                       <li key={key}>
-                        <a className="address-relation-link" href="#">
-                          {tx.txid}
+                        <a
+                          className="address-relation-link"
+                          href="#"
+                          data-id={tx.txid}
+                          data-entity={1}
+                          onClick={onRelationClicked}
+                        >
+                          {tx.txidShort}
                         </a>
                         <div className="address-relation-li-border"></div>
                         <div className="address-relation-value">{tx.value}</div>

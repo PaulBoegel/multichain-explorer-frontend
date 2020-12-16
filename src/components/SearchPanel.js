@@ -8,6 +8,7 @@ export default function SearchPanel({
   onSearchTextChanged,
   blockchainOptions,
   onSearchInputKeyDown,
+  searchText,
 }) {
   const arrowColor = "rgb(103, 136, 155)";
 
@@ -15,6 +16,7 @@ export default function SearchPanel({
     <div className="search-panel search-panel-grid">
       <div className="search-bar">
         <Search
+          searchText={searchText}
           onSearchTextChanged={onSearchTextChanged}
           onKeyDown={onSearchInputKeyDown}
         />
