@@ -1,31 +1,33 @@
-import Graph from './graph/graph';
-import React, { useState } from 'react';
-import DetailPanel from './DetailPanel';
-import './Explorer.css';
-import FilterPanel from './FilterPanel';
-import RelationsPanel from './RelationsPanel';
-import SearchPanel from './SearchPanel';
-import { useQuery } from '@apollo/client';
-import { TRANSACTIONS, BLOCKS, ADDRESS } from '../query';
-import { nodes, links } from '../data.json';
+import Graph from "./graph/graph";
+import React, { useState } from "react";
+import DetailPanel from "./DetailPanel";
+import "./Explorer.css";
+import FilterPanel from "./FilterPanel";
+import RelationsPanel from "./RelationsPanel";
+import SearchPanel from "./SearchPanel";
+import { useQuery } from "@apollo/client";
+import { TRANSACTIONS, BLOCKS, ADDRESS } from "../query";
 
 const blockchainOptions = [
-  { value: 0, name: 'Bitcoin' },
-  { value: 1, name: 'Litecoin' },
-  { value: 2, name: 'Dash' },
-  { value: 3, name: 'Ethereum' },
+  { value: 0, name: "Bitcoin" },
+  { value: 1, name: "Litecoin" },
+  { value: 2, name: "Dash" },
+  { value: 3, name: "Ethereum" },
 ];
+
+let nodes = [];
+let links = [];
 
 export default function Explorer({ serviceUrl }) {
   const [entityId, setEntityId] = useState(0);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [chainId, setChainId] = useState(0);
   const [searchHeight, setSearchHeight] = useState(0);
   const [searchTxid, setSearchTxid] = useState(
-    '1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4'
+    "1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4"
   );
   const [searchAddress, setSearchAddress] = useState(
-    'XdvCaucrgDmzzrfjQoDs2fnAfbZhnptokT'
+    "XdvCaucrgDmzzrfjQoDs2fnAfbZhnptokT"
   );
 
   const searchForDetails = ({ blockList }) => {
@@ -111,7 +113,7 @@ export default function Explorer({ serviceUrl }) {
           hash: block.hash,
           height: block.height,
           mined: block.mined,
-          parent: block.parent ? block.parent : '',
+          parent: block.parent ? block.parent : "",
           transactionCount: block.tx.length,
         };
     }
@@ -130,7 +132,7 @@ export default function Explorer({ serviceUrl }) {
           const from = transaction.from.map((from) => {
             const { address, coinbase, ...data } = from;
             if (coinbase) {
-              return { address: ['coinbase'], ...data };
+              return { address: ["coinbase"], ...data };
             }
             return from;
           });
@@ -283,9 +285,9 @@ export default function Explorer({ serviceUrl }) {
     }
   `;
     return fetch(serviceUrl, {
-      method: 'post',
+      method: "post",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ query, variables }),
     })
@@ -316,7 +318,7 @@ export default function Explorer({ serviceUrl }) {
 
   const onRelationClicked = (event) => {
     const { entity, id } = event.target.dataset;
-    if (id === 'coinbase') return;
+    if (id === "coinbase") return;
     setSearchText(id);
     searchRelation({ entityId: parseInt(entity), relationId: id });
   };
@@ -340,9 +342,109 @@ export default function Explorer({ serviceUrl }) {
     }
   };
 
+  const checkDuplicateNodes = (nodes) => {
+    const seen = new Set();
+
+    return nodes.filter((node) => {
+      const duplicated = seen.has(node.id);
+      seen.add(node.id);
+      return !duplicated;
+    });
+  };
+
+  const checkDuplicateLinks = (links) => {
+    const seenSource = new Set();
+    const seenTarget = new Set();
+
+    return links.filter((link) => {
+      const duplicatedSource = seenSource.has(link.source);
+      seenSource.add(link.source);
+      const duplicatedTarget = seenTarget.has(link.target);
+      seenSource.add(link.target);
+      return !(duplicatedSource && duplicatedTarget);
+    });
+  };
+
+  const setNodesForBlockEntity = ({ blockDetails, blockRelations }) => {
+    if (!blockDetails) return [];
+    nodes = nodes.filter((node) => node.chainId === chainId);
+    links = links.filter((link) => link.chainId === chainId);
+
+    nodes.push({
+      id: blockDetails.height,
+      name: `Block: ${blockDetails.height}`,
+      letter: "B",
+      chainId,
+    });
+    if (blockDetails.height > 0) {
+      nodes.push({
+        id: blockDetails.height - 1,
+        name: `Block: ${blockDetails.height - 1}`,
+        letter: "B",
+        chainId,
+      });
+      links.push({
+        target: blockDetails.height,
+        source: blockDetails.height - 1,
+        chainId,
+      });
+      let connectionExists = nodes.find(
+        (node) => node.id === blockDetails.height - 2
+      );
+      if (connectionExists) {
+        links.push({
+          target: blockDetails.height - 2,
+          source: blockDetails.height - 1,
+          chainId,
+        });
+      }
+      connectionExists = nodes.find(
+        (node) => node.id === blockDetails.height + 1
+      );
+      if (connectionExists) {
+        links.push({
+          target: blockDetails.height + 1,
+          source: blockDetails.height,
+          chainId,
+        });
+      }
+    }
+
+    blockRelations.forEach((transaction) => {
+      nodes.push({
+        id: transaction.txid,
+        name: `Transaction: ${transaction.txid}`,
+        letter: "T",
+        chainId,
+      });
+      links.push({
+        target: blockDetails.height,
+        source: transaction.txid,
+        chainId,
+      });
+    });
+
+    nodes = checkDuplicateNodes(nodes);
+    links = checkDuplicateLinks(links);
+  };
+  const setNodesForTransactionEntity = ({
+    transactionDetails,
+    transactionRelations,
+  }) => {
+    if (!transactionDetails) return [];
+  };
+  const setNodesForAddressEntity = ({ addressDetails, addressRelations }) => {
+    if (!transactionDetails) return [];
+  };
+
   const nodeHoverTooltip = React.useCallback((node) => {
     return `<div>${node.name}</div>`;
   });
+
+  const onNodeClicked = (event) => {
+    const { id } = event.target.dataset;
+    setSearchText(id);
+  };
 
   const blockList = CallBlocks();
   let blockDetails;
@@ -352,6 +454,10 @@ export default function Explorer({ serviceUrl }) {
   let transactionRelations = [];
   let addressRelations = [];
   setEntityData(blockList);
+
+  setNodesForBlockEntity({ blockDetails, blockRelations });
+  setNodesForTransactionEntity({ transactionDetails, transactionRelations });
+  setNodesForAddressEntity({ addressDetails, addressRelations });
 
   return (
     <div className="explorer-grid">
@@ -379,6 +485,7 @@ export default function Explorer({ serviceUrl }) {
           nodesData={nodes}
           linksData={links}
           nodeHoverTooltip={nodeHoverTooltip}
+          handleNodeClicked={onNodeClicked}
         />
       </div>
       <RelationsPanel

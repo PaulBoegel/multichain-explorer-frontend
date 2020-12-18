@@ -3,13 +3,13 @@
     {
       "id": 1,
       "name": "Block Höhe: 1",
-      "letter": "1",
+      "letter": "B",
       "entityId": 0
     },
     {
       "id": 2,
       "name": "TransaktionsID: 01209123u90u09u0992309342",
-      "letter": "A",
+      "letter": "T",
       "entityId": 1
     },
     {
@@ -21,7 +21,7 @@
     {
       "id": 4,
       "name": "Adresse: xsdfsdf",
-      "letter": "B",
+      "letter": "A",
       "entityId": 3
     }
   ],

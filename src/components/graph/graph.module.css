@@ -26,6 +26,7 @@ circle {
 }
 
 .label {
-  color: #eee;
+  fill: #eee;
   cursor: pointer;
+  pointer-events: none;
 }
