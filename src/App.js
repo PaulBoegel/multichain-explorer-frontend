@@ -1,13 +1,13 @@
-import "./App.css";
-import Explorer from "./components/Explorer";
+import './App.css';
+import Explorer from './components/Explorer';
 import {
   ApolloClient,
   ApolloProvider,
   HttpLink,
   InMemoryCache,
-} from "@apollo/client";
+} from '@apollo/client';
 
-const serviceUrl = "http://localhost:4000/graphql";
+const serviceUrl = 'http://localhost:3000/graphql';
 
 //Initializing Apollo Client
 const client = new ApolloClient({
@@ -15,7 +15,7 @@ const client = new ApolloClient({
   link: new HttpLink({
     uri: serviceUrl,
   }),
-  credentials: "same-origin",
+  credentials: 'same-origin',
 });
 
 function App() {
