@@ -9,56 +9,67 @@
   grid-column: 1 / 2;
   grid-row: 1 / 8;
   background-color: #eee;
+  z-index: 1;
 }
 .border-right {
   grid-column: 3 / 4;
   grid-row: 1 / 8;
   background-color: #eee;
+  z-index: 1;
 }
 .border-top {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   background-color: #eee;
+  z-index: 1;
 }
 .search-panel {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
   background-color: #67889b;
+  z-index: 1;
 }
 .first-horizontal-border {
   grid-column: 2 / 3;
   grid-row: 3 / 4;
   background-color: #eee;
+  z-index: 1;
 }
 .filter-panel {
   grid-column: 2 / 3;
   grid-row: 4 / 5;
   background-color: #d28e79;
+  z-index: 1;
 }
 .second-horizontal-border {
   grid-column: 2 / 3;
   grid-row: 5 / 6;
   background-color: #eee;
+  z-index: 1;
 }
 .detail-panel {
   grid-column: 2 / 3;
   grid-row: 6 / 7;
   background-color: #67889b;
+  z-index: 1;
 }
 .graph-panel {
   grid-column: 2 / 3;
   grid-row: 7 / 8;
   background-color: #eee;
+  z-index: 0;
 }
 .relations-panel {
   grid-column: 2 / 3;
   grid-row: 8 / 9;
   background-color: #67889b;
+  z-index: 1;
 }
 .border-bottom {
   grid-column: 2 / 3;
   grid-row: 9 / 10;
   background-color: #eee;
+  z-index: 1;
 }
 
 .entityShow {

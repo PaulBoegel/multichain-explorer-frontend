@@ -1,29 +1,31 @@
-import React, { useState } from "react";
-import DetailPanel from "./DetailPanel";
-import "./Explorer.css";
-import FilterPanel from "./FilterPanel";
-import RelationsPanel from "./RelationsPanel";
-import SearchPanel from "./SearchPanel";
-import { from, useQuery } from "@apollo/client";
-import { TRANSACTIONS, BLOCKS, ADDRESS, SEARCH } from "../query";
+import Graph from './graph/graph';
+import React, { useState } from 'react';
+import DetailPanel from './DetailPanel';
+import './Explorer.css';
+import FilterPanel from './FilterPanel';
+import RelationsPanel from './RelationsPanel';
+import SearchPanel from './SearchPanel';
+import { useQuery } from '@apollo/client';
+import { TRANSACTIONS, BLOCKS, ADDRESS } from '../query';
+import { nodes, links } from '../data.json';
 
 const blockchainOptions = [
-  { value: 0, name: "Bitcoin" },
-  { value: 1, name: "Litecoin" },
-  { value: 2, name: "Dash" },
-  { value: 3, name: "Ethereum" },
+  { value: 0, name: 'Bitcoin' },
+  { value: 1, name: 'Litecoin' },
+  { value: 2, name: 'Dash' },
+  { value: 3, name: 'Ethereum' },
 ];
 
 export default function Explorer({ serviceUrl }) {
   const [entityId, setEntityId] = useState(0);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [chainId, setChainId] = useState(0);
   const [searchHeight, setSearchHeight] = useState(0);
   const [searchTxid, setSearchTxid] = useState(
-    "1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4"
+    '1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4'
   );
   const [searchAddress, setSearchAddress] = useState(
-    "XdvCaucrgDmzzrfjQoDs2fnAfbZhnptokT"
+    'XdvCaucrgDmzzrfjQoDs2fnAfbZhnptokT'
   );
 
   const searchForDetails = ({ blockList }) => {
@@ -109,7 +111,7 @@ export default function Explorer({ serviceUrl }) {
           hash: block.hash,
           height: block.height,
           mined: block.mined,
-          parent: block.parent ? block.parent : "",
+          parent: block.parent ? block.parent : '',
           transactionCount: block.tx.length,
         };
     }
@@ -128,7 +130,7 @@ export default function Explorer({ serviceUrl }) {
           const from = transaction.from.map((from) => {
             const { address, coinbase, ...data } = from;
             if (coinbase) {
-              return { address: ["coinbase"], ...data };
+              return { address: ['coinbase'], ...data };
             }
             return from;
           });
@@ -281,9 +283,9 @@ export default function Explorer({ serviceUrl }) {
     }
   `;
     return fetch(serviceUrl, {
-      method: "post",
+      method: 'post',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ query, variables }),
     })
@@ -314,7 +316,7 @@ export default function Explorer({ serviceUrl }) {
 
   const onRelationClicked = (event) => {
     const { entity, id } = event.target.dataset;
-    if (id === "coinbase") return;
+    if (id === 'coinbase') return;
     setSearchText(id);
     searchRelation({ entityId: parseInt(entity), relationId: id });
   };
@@ -337,6 +339,10 @@ export default function Explorer({ serviceUrl }) {
       return;
     }
   };
+
+  const nodeHoverTooltip = React.useCallback((node) => {
+    return `<div>${node.name}</div>`;
+  });
 
   const blockList = CallBlocks();
   let blockDetails;
@@ -368,7 +374,13 @@ export default function Explorer({ serviceUrl }) {
         transactionDetails={transactionDetails}
         addressDetails={addressDetails}
       />
-      <div className="graph-panel"></div>
+      <div className="graph-panel">
+        <Graph
+          nodesData={nodes}
+          linksData={links}
+          nodeHoverTooltip={nodeHoverTooltip}
+        />
+      </div>
       <RelationsPanel
         visibleId={entityId}
         blockRelations={blockRelations}

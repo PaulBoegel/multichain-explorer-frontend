@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Block Höhe: 1",
+      "letter": "1",
+      "entityId": 0
+    },
+    {
+      "id": 2,
+      "name": "TransaktionsID: 01209123u90u09u0992309342",
+      "letter": "A",
+      "entityId": 1
+    },
+    {
+      "id": 3,
+      "name": "Adresse: x34234234",
+      "letter": "A",
+      "entityId": 2
+    },
+    {
+      "id": 4,
+      "name": "Adresse: xsdfsdf",
+      "letter": "B",
+      "entityId": 3
+    }
+  ],
+  "links": [
+    {
+      "source": 2,
+      "target": 1
+    },
+    {
+      "source": 3,
+      "target": 2
+    },
+    {
+      "source": 4,
+      "target": 2
+    }
+  ]
+}
