@@ -235,19 +235,19 @@ export default function Explorer({ serviceUrl }) {
     }
   };
 
-  const searchEntity = (entityId) => {
+  const searchEntity = (entityId, searchString) => {
     switch (entityId) {
       case 1:
         setEntityId(1);
-        setSearchTxid(searchText);
+        setSearchTxid(searchString);
         break;
       case 2:
         setEntityId(2);
-        setSearchAddress(searchText);
+        setSearchAddress(searchString);
         break;
       default:
         setEntityId(0);
-        setSearchHeight(parseInt(searchText));
+        setSearchHeight(parseInt(searchString));
     }
   };
 
@@ -277,8 +277,8 @@ export default function Explorer({ serviceUrl }) {
     return getBlocks(data);
   };
 
-  const CallSearchEntity = () => {
-    const variables = { chainId, searchString: searchText };
+  const CallSearchEntity = (searchString) => {
+    const variables = { chainId, searchString };
     const query = `
     query searchEntity($chainId: Int, $searchString: String) {
       searchEntity(chainId: $chainId, searchString: $searchString)
@@ -305,14 +305,11 @@ export default function Explorer({ serviceUrl }) {
     setEntityId(0);
   };
 
-  const onSearchTextChanged = (event) => {
-    setSearchText(event.target.value);
-  };
-
   const onSearchInputKeyDown = async (event) => {
     if (event.keyCode === 13) {
-      const entityId = await CallSearchEntity();
-      searchEntity(entityId);
+      const searchString = event.target.value;
+      const entityId = await CallSearchEntity(searchString);
+      searchEntity(entityId, searchString);
     }
   };
 
@@ -352,21 +349,155 @@ export default function Explorer({ serviceUrl }) {
     });
   };
 
-  const checkDuplicateLinks = (links) => {
-    const seenSource = new Set();
-    const seenTarget = new Set();
+  const setNodesForAddressEntity = ({ addressDetails, addressRelations }) => {
+    if (!addressDetails) return;
+    nodes = nodes.filter((node) => node.chainId === chainId);
+    links = links.filter((link) => link.chainId === chainId);
 
-    return links.filter((link) => {
-      const duplicatedSource = seenSource.has(link.source);
-      seenSource.add(link.source);
-      const duplicatedTarget = seenTarget.has(link.target);
-      seenSource.add(link.target);
-      return !(duplicatedSource && duplicatedTarget);
+    nodes.push({
+      id: addressDetails.address,
+      name: `Address: ${addressDetails.address}`,
+      letter: "A",
+      chainId,
     });
+
+    const inTransactions = addressRelations[0].map(
+      (transaction) => transaction.txid
+    );
+
+    inTransactions.forEach((txid) => {
+      nodes.push({
+        id: txid,
+        name: `Transaction: ${txid}`,
+        letter: "T",
+        chainId,
+      });
+
+      links.push({
+        source: txid,
+        target: addressDetails.address,
+        chainId,
+      });
+    });
+
+    const outTransactions = addressRelations[1].map(
+      (transaction) => transaction.txid
+    );
+
+    outTransactions.forEach((txid) => {
+      nodes.push({
+        id: txid,
+        name: `Transaction: ${txid}`,
+        letter: "T",
+        chainId,
+      });
+
+      links.push({
+        source: txid,
+        target: addressDetails.address,
+        chainId,
+      });
+    });
+
+    nodes = checkDuplicateNodes(nodes);
+  };
+
+  const setNodesForTransactionEntity = ({
+    transactionDetails,
+    transactionRelations,
+  }) => {
+    if (!transactionDetails) return;
+    nodes = nodes.filter((node) => node.chainId === chainId);
+    links = links.filter((link) => link.chainId === chainId);
+
+    nodes.push({
+      id: transactionDetails.txid,
+      name: `Transaction: ${transactionDetails.txid}`,
+      letter: "T",
+      chainId,
+    });
+
+    nodes.push({
+      id: transactionDetails.block,
+      name: `Block: ${transactionDetails.block}`,
+      letter: "B",
+      chainId,
+    });
+
+    links.push({
+      source: transactionDetails.txid,
+      target: transactionDetails.block,
+      chainId,
+    });
+
+    const fromAdresses = [];
+    transactionRelations[0].forEach((addressObj) => {
+      fromAdresses.push(
+        ...addressObj.address.map((address) => {
+          return { addressId: address };
+        })
+      );
+    });
+
+    fromAdresses.forEach((from) => {
+      if (from.addressId === "coinbase") {
+        nodes.push({
+          id: `${from.addressId}-${transactionDetails.txid}`,
+          name: `${from.addressId}`,
+          letter: "C",
+          chainId,
+        });
+
+        links.push({
+          source: `${from.addressId}-${transactionDetails.txid}`,
+          target: transactionDetails.txid,
+          chainId,
+        });
+        return;
+      }
+      nodes.push({
+        id: from.addressId,
+        name: `Address: ${from.addressId}`,
+        letter: "A",
+        chainId,
+      });
+
+      links.push({
+        source: from.addressId,
+        target: transactionDetails.txid,
+        chainId,
+      });
+    });
+
+    const toAddress = [];
+    transactionRelations[1].forEach((addressObj) => {
+      toAddress.push(
+        ...addressObj.address.map((address) => {
+          return { addressId: address };
+        })
+      );
+    });
+
+    toAddress.forEach((to) => {
+      nodes.push({
+        id: to.addressId,
+        name: `Address: ${to.addressId}`,
+        letter: "A",
+        chainId,
+      });
+
+      links.push({
+        source: transactionDetails.txid,
+        target: to.addressId,
+        chainId,
+      });
+    });
+
+    nodes = checkDuplicateNodes(nodes);
   };
 
   const setNodesForBlockEntity = ({ blockDetails, blockRelations }) => {
-    if (!blockDetails) return [];
+    if (!blockDetails) return;
     nodes = nodes.filter((node) => node.chainId === chainId);
     links = links.filter((link) => link.chainId === chainId);
 
@@ -425,25 +556,18 @@ export default function Explorer({ serviceUrl }) {
     });
 
     nodes = checkDuplicateNodes(nodes);
-    links = checkDuplicateLinks(links);
-  };
-  const setNodesForTransactionEntity = ({
-    transactionDetails,
-    transactionRelations,
-  }) => {
-    if (!transactionDetails) return [];
-  };
-  const setNodesForAddressEntity = ({ addressDetails, addressRelations }) => {
-    if (!transactionDetails) return [];
   };
 
   const nodeHoverTooltip = React.useCallback((node) => {
     return `<div>${node.name}</div>`;
   });
 
-  const onNodeClicked = (event) => {
+  const onNodeClicked = async (event) => {
     const { id } = event.target.dataset;
-    setSearchText(id);
+    const isCoinbase = id.split("coinbase").length === 2;
+    if (isCoinbase) return;
+    const entityId = await CallSearchEntity(id);
+    searchEntity(entityId, id);
   };
 
   const blockList = CallBlocks();
@@ -468,7 +592,6 @@ export default function Explorer({ serviceUrl }) {
         searchText={searchText}
         blockchainOptions={blockchainOptions}
         onDropdownChanged={onSearchDropdownChanged}
-        onSearchTextChanged={onSearchTextChanged}
         onSearchInputKeyDown={onSearchInputKeyDown}
       />
       <div className="first-horizontal-border"></div>

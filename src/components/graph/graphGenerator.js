@@ -138,9 +138,9 @@ export function runGraph(
     .call(drag(simulation));
 
   const handleZoom = (event) => {
-    node.attr("transform", event.transform);
-    link.attr("transform", event.transform);
-    label.attr("transform", event.transform);
+    d3.select(".entitys").attr("transform", event.transform);
+    d3.select(".links").attr("transform", event.transform);
+    d3.select(".labels").attr("transform", event.transform);
   };
 
   const ticked = () => {
@@ -182,6 +182,7 @@ export function runGraph(
       let index = 0;
       while (index < links.length) {
         if (links[index].source?.id === undefined) {
+          links[index].linkId = `${links[index].source}-${links[index].target}`;
           index++;
           continue;
         }
@@ -189,10 +190,18 @@ export function runGraph(
           source: links[index].source.id,
           target: links[index].target.id,
           chainId: links[index].chainId,
+          linkId: `${links[index].source.id}-${links[index].target.id}`,
         };
         links.splice(index, 1);
         links.push(link);
       }
+
+      const linksSeen = new Set();
+      links = links.filter((link) => {
+        const duplicatded = linksSeen.has(link.linkId);
+        linksSeen.add(link.linkId);
+        return !duplicatded;
+      });
 
       link = link.data(links);
       const linkEnter = link
@@ -203,7 +212,7 @@ export function runGraph(
       link = linkEnter.merge(link);
       link.exit().remove();
 
-      node = node.data(nodes);
+      node = node.data(nodes).attr("data-id", (d) => d.id);
       let nodeEnter = node
         .enter()
         .append("circle")
@@ -222,7 +231,9 @@ export function runGraph(
       node = nodeEnter.merge(node);
       node.exit().remove();
 
-      label = label.data(nodes);
+      label = label.data(nodes).text((d) => {
+        return icon(d);
+      });
       const labelEnter = label
         .enter()
         .append("text")

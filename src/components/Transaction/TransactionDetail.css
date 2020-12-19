@@ -17,7 +17,7 @@
 
 .transaction-details-top-section {
   display: grid;
-  grid-template-columns: 10vw 17vw 10vw 17vw 6vw 17vw;
+  grid-template-columns: 10vw 55vw 10vw 17vw 6vw 17vw;
   grid-row: 1 / 2;
   grid-column: 2 / 3;
   text-align: left;
@@ -107,7 +107,7 @@
 
   .transaction-details-top-section {
     display: grid;
-    grid-template-columns: 120px 200px 120px 200px 80px 220px;
+    grid-template-columns: 120px 630px 120px 200px 80px 220px;
     grid-row: 1 / 2;
     grid-column: 2 / 3;
     text-align: left;

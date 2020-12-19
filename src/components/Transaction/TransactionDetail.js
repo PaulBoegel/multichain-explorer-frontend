@@ -14,9 +14,7 @@ export default function TransactionDetail({ visible, details }) {
       <div className="transaction-details-border-left"></div>
       <div className="transaction-details-top-section">
         <label className="transacton-details-label-txid">TxID: </label>
-        <div className="transaction-details-value-txid">
-          {details.txid.substring(0, 15) + "..."}
-        </div>
+        <div className="transaction-details-value-txid">{details.txid}</div>
         <label className="transacton-details-label-block">Block: </label>
         <div className="transaction-details-value-block">
           <a href="#">{details.block}</a>

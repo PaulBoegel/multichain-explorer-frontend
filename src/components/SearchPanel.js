@@ -16,7 +16,7 @@ export default function SearchPanel({
     <div className="search-panel search-panel-grid">
       <div className="search-bar">
         <Search
-          searchText={searchText}
+          searchTextIn={searchText}
           onSearchTextChanged={onSearchTextChanged}
           onKeyDown={onSearchInputKeyDown}
         />
