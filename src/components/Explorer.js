@@ -5,7 +5,7 @@ import "./Explorer.css";
 import FilterPanel from "./FilterPanel";
 import RelationsPanel from "./RelationsPanel";
 import SearchPanel from "./SearchPanel";
-import { useQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import { TRANSACTIONS, BLOCKS, ADDRESS } from "../query";
 
 const blockchainOptions = [
@@ -18,11 +18,15 @@ const blockchainOptions = [
 let nodes = [];
 let links = [];
 
-export default function Explorer({ serviceUrl }) {
+export default function Explorer({
+  serviceUrl,
+  initialHeight,
+  onChainChanged: onBlockchainChanged,
+  chainId,
+}) {
   const [entityId, setEntityId] = useState(0);
   const [searchText, setSearchText] = useState("");
-  const [chainId, setChainId] = useState(0);
-  const [searchHeight, setSearchHeight] = useState(0);
+  const [searchHeight, setSearchHeight] = useState(initialHeight);
   const [searchTxid, setSearchTxid] = useState(
     "1b7a8ee1a86e840c53e118298f7c4242e394be6fb0ed7c55b91fe17e3d8998e4"
   );
@@ -267,6 +271,22 @@ export default function Explorer({ serviceUrl }) {
     }
   };
 
+  const CallBlockchainHeight = () => {
+    const request = {
+      query: gql`
+        query getHeight($chainId: Int) {
+          getHeight(chainId: $chainId)
+        }
+      `,
+      variables: { chainId },
+    };
+    const { loading, data } = useQuery(request.query, {
+      variables: request.variables,
+    });
+
+    return data.getHeight;
+  };
+
   const CallBlocks = () => {
     const { query, variables } = getEntityQuery(entityId);
     const { loading, data } = useQuery(query, {
@@ -277,8 +297,8 @@ export default function Explorer({ serviceUrl }) {
     return getBlocks(data);
   };
 
-  const CallSearchEntity = (searchString) => {
-    const variables = { chainId, searchString };
+  const CallSearchEntity = (searchString, chain) => {
+    const variables = { chainId: parseInt(chain), searchString };
     const query = `
     query searchEntity($chainId: Int, $searchString: String) {
       searchEntity(chainId: $chainId, searchString: $searchString)
@@ -300,15 +320,10 @@ export default function Explorer({ serviceUrl }) {
       });
   };
 
-  const onSearchDropdownChanged = (event) => {
-    setChainId(parseInt(event.target.value));
-    setEntityId(0);
-  };
-
   const onSearchInputKeyDown = async (event) => {
     if (event.keyCode === 13) {
       const searchString = event.target.value;
-      const entityId = await CallSearchEntity(searchString);
+      const entityId = await CallSearchEntity(searchString, chainId);
       searchEntity(entityId, searchString);
     }
   };
@@ -349,29 +364,67 @@ export default function Explorer({ serviceUrl }) {
     });
   };
 
+  const pushBlock = (id) => {
+    return {
+      id: id,
+      name: `Block: ${id}`,
+      letter: "B",
+      class: "block",
+      form: "rect",
+      radius: 40,
+      chainId,
+    };
+  };
+
+  const pushTransaction = (id) => {
+    return {
+      id: id,
+      name: `Transaction: ${id}`,
+      letter: "T",
+      class: "transaction",
+      form: "circle",
+      radius: 25,
+      chainId,
+    };
+  };
+
+  const pushAddress = (id) => {
+    return {
+      id,
+      name: `Address: ${id}`,
+      letter: "A",
+      class: "address",
+      form: "triangle",
+      radius: 25,
+      chainId,
+    };
+  };
+
+  const pushCoinbase = (id) => {
+    return {
+      id,
+      name: `coinbase`,
+      letter: "C",
+      class: "coinbase",
+      form: "circle",
+      radius: 25,
+      chainId,
+    };
+  };
+
   const setNodesForAddressEntity = ({ addressDetails, addressRelations }) => {
     if (!addressDetails) return;
     nodes = nodes.filter((node) => node.chainId === chainId);
     links = links.filter((link) => link.chainId === chainId);
 
-    nodes.push({
-      id: addressDetails.address,
-      name: `Address: ${addressDetails.address}`,
-      letter: "A",
-      chainId,
-    });
+    nodes.push(pushAddress(addressDetails.address));
 
     const inTransactions = addressRelations[0].map(
       (transaction) => transaction.txid
     );
 
     inTransactions.forEach((txid) => {
-      nodes.push({
-        id: txid,
-        name: `Transaction: ${txid}`,
-        letter: "T",
-        chainId,
-      });
+      nodes.push(pushTransaction(txid));
 
       links.push({
         source: txid,
@@ -385,12 +438,7 @@ export default function Explorer({ serviceUrl }) {
     );
 
     outTransactions.forEach((txid) => {
-      nodes.push({
-        id: txid,
-        name: `Transaction: ${txid}`,
-        letter: "T",
-        chainId,
-      });
+      nodes.push(pushTransaction(txid));
 
       links.push({
         source: txid,
@@ -410,19 +458,9 @@ export default function Explorer({ serviceUrl }) {
     nodes = nodes.filter((node) => node.chainId === chainId);
     links = links.filter((link) => link.chainId === chainId);
 
-    nodes.push({
-      id: transactionDetails.txid,
-      name: `Transaction: ${transactionDetails.txid}`,
-      letter: "T",
-      chainId,
-    });
+    nodes.push(pushTransaction(transactionDetails.txid));
 
-    nodes.push({
-      id: transactionDetails.block,
-      name: `Block: ${transactionDetails.block}`,
-      letter: "B",
-      chainId,
-    });
+    nodes.push(pushBlock(transactionDetails.block));
 
     links.push({
       source: transactionDetails.txid,
@@ -441,12 +479,9 @@ export default function Explorer({ serviceUrl }) {
 
     fromAdresses.forEach((from) => {
       if (from.addressId === "coinbase") {
-        nodes.push({
-          id: `${from.addressId}-${transactionDetails.txid}`,
-          name: `${from.addressId}`,
-          letter: "C",
-          chainId,
-        });
+        nodes.push(
+          pushCoinbase(`${from.addressId}-${transactionDetails.txid}`)
+        );
 
         links.push({
           source: `${from.addressId}-${transactionDetails.txid}`,
@@ -455,12 +490,7 @@ export default function Explorer({ serviceUrl }) {
         });
         return;
       }
-      nodes.push({
-        id: from.addressId,
-        name: `Address: ${from.addressId}`,
-        letter: "A",
-        chainId,
-      });
+      nodes.push(pushAddress(from.addressId));
 
       links.push({
         source: from.addressId,
@@ -479,12 +509,7 @@ export default function Explorer({ serviceUrl }) {
     });
 
     toAddress.forEach((to) => {
-      nodes.push({
-        id: to.addressId,
-        name: `Address: ${to.addressId}`,
-        letter: "A",
-        chainId,
-      });
+      nodes.push(pushAddress(to.addressId));
 
       links.push({
         source: transactionDetails.txid,
@@ -501,19 +526,9 @@ export default function Explorer({ serviceUrl }) {
     nodes = nodes.filter((node) => node.chainId === chainId);
     links = links.filter((link) => link.chainId === chainId);
 
-    nodes.push({
-      id: blockDetails.height,
-      name: `Block: ${blockDetails.height}`,
-      letter: "B",
-      chainId,
-    });
+    nodes.push(pushBlock(blockDetails.height));
     if (blockDetails.height > 0) {
-      nodes.push({
-        id: blockDetails.height - 1,
-        name: `Block: ${blockDetails.height - 1}`,
-        letter: "B",
-        chainId,
-      });
+      nodes.push(pushBlock(blockDetails.height - 1));
       links.push({
         target: blockDetails.height,
         source: blockDetails.height - 1,
@@ -542,12 +557,7 @@ export default function Explorer({ serviceUrl }) {
     }
 
     blockRelations.forEach((transaction) => {
-      nodes.push({
-        id: transaction.txid,
-        name: `Transaction: ${transaction.txid}`,
-        letter: "T",
-        chainId,
-      });
+      nodes.push(pushTransaction(transaction.txid));
       links.push({
         target: blockDetails.height,
         source: transaction.txid,
@@ -559,14 +569,16 @@ export default function Explorer({ serviceUrl }) {
   };
 
   const nodeHoverTooltip = React.useCallback((node) => {
-    return `<div>${node.name}</div>`;
+    return `<div class="tooltip">${node.name.slice(0, 30)} ${
+      node.name.length > 40 ? "..." : ""
+    }</div>`;
   });
 
   const onNodeClicked = async (event) => {
-    const { id } = event.target.dataset;
+    const { id, chain } = event.target.dataset;
     const isCoinbase = id.split("coinbase").length === 2;
     if (isCoinbase) return;
-    const entityId = await CallSearchEntity(id);
+    const entityId = await CallSearchEntity(id, chain);
     searchEntity(entityId, id);
   };
 
@@ -589,9 +601,10 @@ export default function Explorer({ serviceUrl }) {
       <div className="border-left"></div>
       <div className="border-right"></div>
       <SearchPanel
+        selected={chainId}
         searchText={searchText}
         blockchainOptions={blockchainOptions}
-        onDropdownChanged={onSearchDropdownChanged}
+        onDropdownChanged={onBlockchainChanged}
         onSearchInputKeyDown={onSearchInputKeyDown}
       />
       <div className="first-horizontal-border"></div>

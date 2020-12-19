@@ -11,8 +11,11 @@
 
 div.tooltip {
   position: absolute;
+  top: 0;
   text-align: center;
-  width: 110px;
+  vertical-align: middle;
+  width: 150px;
+  height: 35px;
   padding: 10px;
   font: 12px sans-serif;
   background: lightsteelblue;
@@ -23,10 +26,42 @@ div.tooltip {
 
 circle {
   cursor: pointer;
+  fill: #d28e79;
+}
+
+circle.address {
+  fill: #ae814a;
+}
+
+circle.transaction {
+  fill: #347a56;
+}
+
+circle.coinbase {
+  fill: #832638;
+}
+
+circle:hover {
+  fill: #67889b;
+}
+
+circle.active {
+  fill: #67889b;
 }
 
 .label {
   fill: #eee;
   cursor: pointer;
   pointer-events: none;
+}
+
+.label.block {
+  font-weight: bold;
+}
+.label.address {
+  font-size: 20px;
+}
+
+.label.coinbase {
+  font-size: 20px;
 }

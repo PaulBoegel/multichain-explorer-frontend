@@ -80,6 +80,10 @@
   display: none;
 }
 
+.tooltip {
+  position: absolute;
+}
+
 @media (min-width: 850px) {
   .explorer-grid {
     grid-template-rows: 8px 50px 2px 50px 2px 100px auto 165px 8px;

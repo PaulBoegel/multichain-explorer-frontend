@@ -34,5 +34,7 @@ export default function Graph({
     return destroyFn;
   }, []);
 
-  return <div ref={containerRef} className={styles.container} />;
+  return (
+    <div id="graph-container" ref={containerRef} className={styles.container} />
+  );
 }

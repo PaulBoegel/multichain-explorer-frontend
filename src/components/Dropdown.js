@@ -6,11 +6,12 @@ export default function Dropdown({
   arrowColor,
   optionsColor,
   onChange,
+  selected,
 }) {
   // const arrowSVG = `url("data:image/svg+xml;charset=UTF-8, <svg viewBox='0 0 100 100'><polygon fill='${arrowColor}' points='50 15, 100 100, 0 100'/></svg>")`;
   return (
     <div className="dropdown-wrap">
-      <select className="dropdown" onChange={onChange}>
+      <select className="dropdown" onChange={onChange} value={selected}>
         {options.map((option, key) => {
           return (
             <option

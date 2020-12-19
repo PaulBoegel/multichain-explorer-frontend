@@ -14,14 +14,13 @@ export function runGraph(
   const containerRect = container.getBoundingClientRect();
   const height = containerRect.height;
   const width = containerRect.width;
-
-  const color = () => {
-    return "#d28e79";
-  };
-
   const icon = (d) => {
     return d.letter;
   };
+
+  d3.selectAll("circle").remove();
+  d3.selectAll("line").remove();
+  d3.selectAll("text").remove();
 
   const drag = (simulation) => {
     const dragstarted = (event, d) => {
@@ -84,7 +83,7 @@ export function runGraph(
       "link",
       d3.forceLink(links).id((d) => d.id)
     )
-    .force("charge", d3.forceManyBody().strength(-500))
+    .force("charge", d3.forceManyBody().strength(-1500))
     .force("x", d3.forceX())
     .force("y", d3.forceY());
 
@@ -102,9 +101,9 @@ export function runGraph(
     .append("g")
     .attr("class", "links")
     .attr("stroke", "#999")
-    .attr("stroke-opacity", 0.6)
+    .attr("stroke-opacity", 1)
+    .attr("stroke-width", "2px")
     .selectAll("line")
-    .data(links)
     .join("line")
     .attr("stroke-width", (d) => Math.sqrt(d.value));
 
@@ -114,10 +113,8 @@ export function runGraph(
     .attr("stroke", "#fff")
     .attr("stroke-width", 2)
     .selectAll("circle")
-    .data(nodes)
     .join("circle")
     .attr("r", 20)
-    .attr("fill", color)
     .attr("data-id", (d) => d.id)
     .on("click", handleNodeClicked)
     .call(drag(simulation));
@@ -126,7 +123,6 @@ export function runGraph(
     .append("g")
     .attr("class", "labels")
     .selectAll("text")
-    .data(nodes)
     .enter()
     .append("text")
     .attr("text-anchor", "middle")
@@ -212,13 +208,25 @@ export function runGraph(
       link = linkEnter.merge(link);
       link.exit().remove();
 
-      node = node.data(nodes).attr("data-id", (d) => d.id);
+      node = node
+        .data(nodes)
+        .attr("data-id", (d) => d.id)
+        .attr("data-chain", (d) => d.chainId)
+        .attr("r", (d) => d.radius)
+        .attr("class", (d) => styles[d.class])
+        .on("mouseover", (event, d) => {
+          addTooltip(nodeHoverTooltip, d, event.pageX, event.pageY);
+        })
+        .on("mouseout", () => {
+          removeTooltip();
+        });
       let nodeEnter = node
         .enter()
         .append("circle")
-        .attr("r", 20)
-        .attr("fill", color)
+        .attr("class", (d) => styles[d.class])
+        .attr("r", (d) => d.radius)
         .attr("data-id", (d) => d.id)
+        .attr("data-chain", (d) => d.chainId)
         .on("click", handleNodeClicked)
         .call(drag(simulation))
         .on("mouseover", (event, d) => {
@@ -238,8 +246,12 @@ export function runGraph(
         .enter()
         .append("text")
         .attr("text-anchor", "middle")
+        .attr("stroke-opacity", 1)
+        .attr("stroke-width", "2px")
         .attr("dominant-baseline", "central")
-        .attr("class", styles.label)
+        .attr("class", (d) => {
+          return `${styles.label} ${styles[d.class]}`;
+        })
         .text((d) => {
           return icon(d);
         })

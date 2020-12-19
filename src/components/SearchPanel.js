@@ -9,6 +9,7 @@ export default function SearchPanel({
   blockchainOptions,
   onSearchInputKeyDown,
   searchText,
+  selected,
 }) {
   const arrowColor = "rgb(103, 136, 155)";
 
@@ -24,6 +25,7 @@ export default function SearchPanel({
       <div className="search-border"></div>
       <div className="search-dropdown">
         <Dropdown
+          selected={selected}
           onChange={onDropdownChanged}
           arrowColor={arrowColor}
           optionsColor={"#67889b"}

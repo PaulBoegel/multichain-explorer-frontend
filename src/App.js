@@ -1,5 +1,6 @@
 import "./App.css";
-import Explorer from "./components/Explorer";
+
+import ExplorerWraper from "./components/ExplorerWraper";
 import {
   ApolloClient,
   ApolloProvider,
@@ -23,7 +24,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <ApolloProvider client={client}>
-          <Explorer serviceUrl={serviceUrl} />
+          <ExplorerWraper serviceUrl={serviceUrl} />
         </ApolloProvider>
       </header>
     </div>
