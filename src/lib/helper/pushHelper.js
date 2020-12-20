@@ -1,4 +1,4 @@
-export const pushBlock = (id, chainId) => {
+export const pushBlock = (id, chainId, active = false) => {
   return {
     id: id,
     name: `Block: ${id}`,
@@ -7,10 +7,11 @@ export const pushBlock = (id, chainId) => {
     form: "rect",
     radius: 40,
     chainId,
+    active,
   };
 };
 
-export const pushTransaction = (id, chainId) => {
+export const pushTransaction = (id, chainId, active = false) => {
   return {
     id: id,
     name: `Transaction: ${id}`,
@@ -19,10 +20,11 @@ export const pushTransaction = (id, chainId) => {
     form: "circle",
     radius: 25,
     chainId,
+    active,
   };
 };
 
-export const pushAddress = (id, chainId) => {
+export const pushAddress = (id, chainId, active = false) => {
   return {
     id,
     name: `Address: ${id}`,
@@ -31,6 +33,7 @@ export const pushAddress = (id, chainId) => {
     form: "triangle",
     radius: 25,
     chainId,
+    active,
   };
 };
 

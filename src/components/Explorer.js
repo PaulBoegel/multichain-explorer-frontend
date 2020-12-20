@@ -26,7 +26,7 @@ const getEntityQuery = (chainId, searchState) => {
         variables: {
           chainId: chainId,
           txid: searchState.value,
-          pageSize: 10,
+          pageSize: 100,
           page: 0,
         },
       };

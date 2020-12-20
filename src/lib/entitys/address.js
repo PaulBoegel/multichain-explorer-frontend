@@ -6,12 +6,12 @@ export default function AddressFactory({ chainId, blockList, id }) {
     let nodes = [];
     let links = [];
 
-    nodes.push(pushAddress(details.address, chainId));
+    nodes.push(pushAddress(details.address, chainId, true));
 
     const inTransactions = relations[0].map((transaction) => transaction.txid);
 
     inTransactions.forEach((txid) => {
-      nodes.push(pushTransaction(txid, chainId));
+      nodes.push(pushTransaction(txid, chainId, false));
 
       links.push({
         source: txid,
@@ -23,11 +23,11 @@ export default function AddressFactory({ chainId, blockList, id }) {
     const outTransactions = relations[1].map((transaction) => transaction.txid);
 
     outTransactions.forEach((txid) => {
-      nodes.push(pushTransaction(txid, chainId));
+      nodes.push(pushTransaction(txid, chainId, false));
 
       links.push({
-        source: txid,
-        target: details.address,
+        source: details.address,
+        target: txid,
         chainId,
       });
     });

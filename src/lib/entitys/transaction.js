@@ -11,9 +11,9 @@ export default function TransactionFactory({ chainId, blockList, id }) {
     let nodes = [];
     let links = [];
 
-    nodes.push(pushTransaction(details.txid, chainId));
+    nodes.push(pushTransaction(details.txid, chainId, true));
 
-    nodes.push(pushBlock(details.block, chainId));
+    nodes.push(pushBlock(details.block, chainId, false));
 
     links.push({
       source: details.txid,
@@ -41,7 +41,7 @@ export default function TransactionFactory({ chainId, blockList, id }) {
         });
         return;
       }
-      nodes.push(pushAddress(from.addressId, chainId));
+      nodes.push(pushAddress(from.addressId, chainId, false));
 
       links.push({
         source: from.addressId,
@@ -64,7 +64,7 @@ export default function TransactionFactory({ chainId, blockList, id }) {
     });
 
     toAddress.forEach((to) => {
-      nodes.push(pushAddress(to.addressId, chainId));
+      nodes.push(pushAddress(to.addressId, chainId, false));
 
       links.push({
         source: details.txid,

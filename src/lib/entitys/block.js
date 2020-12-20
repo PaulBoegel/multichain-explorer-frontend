@@ -4,9 +4,9 @@ export default function BlockFactory({ chainId, blockList, id }) {
   const _createGraphData = () => {
     const nodes = [];
     const links = [];
-    nodes.push(pushBlock(details.height, chainId));
+    nodes.push(pushBlock(details.height, chainId, true));
     if (details.height > 0) {
-      nodes.push(pushBlock(details.height - 1, chainId));
+      nodes.push(pushBlock(details.height - 1, chainId, false));
       links.push({
         target: details.height,
         source: details.height - 1,
@@ -33,7 +33,7 @@ export default function BlockFactory({ chainId, blockList, id }) {
     }
 
     relations.forEach((transaction) => {
-      nodes.push(pushTransaction(transaction.txid, chainId));
+      nodes.push(pushTransaction(transaction.txid, chainId, false));
       links.push({
         target: details.height,
         source: transaction.txid,

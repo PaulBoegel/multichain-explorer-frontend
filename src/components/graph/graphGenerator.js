@@ -26,13 +26,6 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
     const dragended = (event, d) => {
       const isParent = linksData.find((link) => link.target.id === d.id);
-
-      if (!event.active) simulation.alphaTarget(0.3);
-      if (isParent) {
-        d.fx = d.x;
-        d.fy = d.y;
-        return;
-      }
       d.fx = null;
       d.fy = null;
       simulation.alphaTarget(0);
@@ -71,9 +64,12 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     .forceSimulation(nodesData)
     .force(
       "link",
-      d3.forceLink(linksData).id((d) => d.id)
+      d3
+        .forceLink(linksData)
+        .id((d) => d.id)
+        .distance(100)
     )
-    .force("charge", d3.forceManyBody().strength(-1500))
+    .force("charge", d3.forceManyBody().strength(-5000))
     .force("x", d3.forceX())
     .force("y", d3.forceY());
 
@@ -87,13 +83,28 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       })
     );
 
+  svg
+    .append("defs")
+    .append("marker")
+    .attr("id", "arrow")
+    .attr("markerWidth", 12)
+    .attr("markerHeight", 12)
+    .attr("refX", 6)
+    .attr("refY", 6)
+    .attr("orient", "auto")
+    .attr("markerUnits", "storkeWidth")
+    .append("path")
+    .attr("fill", "gray")
+    .attr("d", "M0,0 L0,12 L12,6 z");
+
   let link = svg
     .append("g")
     .attr("class", "links")
     .attr("stroke", "#999")
     .attr("stroke-opacity", 1)
     .attr("stroke-width", "2px")
-    .selectAll("line");
+    .attr("marker-mid", "url(#arrow)")
+    .selectAll("path");
 
   let node = svg
     .append("g")
@@ -124,12 +135,21 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     d3.select(".labels").attr("transform", event.transform);
   };
 
+  const lineGenerator = d3.line();
+
   const ticked = () => {
-    link
-      .attr("x1", (d) => d.source.x)
-      .attr("y1", (d) => d.source.y)
-      .attr("x2", (d) => d.target.x)
-      .attr("y2", (d) => d.target.y);
+    link.attr("d", (d) => {
+      const mid = [
+        (d.source.x + d.target.x) / 2,
+        (d.source.y + d.target.y) / 2,
+      ];
+
+      return lineGenerator([
+        [d.source.x, d.source.y],
+        mid,
+        [d.target.x, d.target.y],
+      ]);
+    });
 
     node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
 
@@ -160,12 +180,17 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       return svg.node();
     },
     setNodes: ({ links, nodes, chainId }) => {
-      nodesData.push(...nodes);
-      linksData.push(...links);
+      nodesData.unshift(...nodes);
+      linksData.unshift(...links);
 
       let index = 0;
+      let activePassed = false;
       while (index < nodesData.length) {
         if (nodesData[index].chainId === chainId) {
+          if (nodesData[index].active === true) {
+            if (activePassed === true) nodesData[index].active = false;
+            activePassed = true;
+          }
           index++;
           continue;
         }
@@ -224,7 +249,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
       const linkEnter = link
         .enter()
-        .append("line")
+        .append("path")
         .attr("stroke-width", (d) => Math.sqrt(d.value));
 
       link = linkEnter.merge(link);
@@ -234,7 +259,9 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
         .attr("r", (d) => d.radius)
-        .attr("class", (d) => styles[d.class])
+        .attr("class", (d) => {
+          return `${styles[d.class]} ${d.active ? styles.active : ""}`;
+        })
         .on("mouseover", (event, d) => {
           addTooltip(nodeHoverTooltip, d, event.pageX, event.pageY);
         })
@@ -245,7 +272,9 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       let nodeEnter = node
         .enter()
         .append("circle")
-        .attr("class", (d) => styles[d.class])
+        .attr("class", (d) => {
+          return `${styles[d.class]} ${d.active ? styles.active : ""}`;
+        })
         .attr("r", (d) => d.radius)
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
@@ -283,7 +312,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
       simulation.nodes(nodesData);
       simulation.force("link").links(linksData);
-      simulation.alpha(0.5).restart();
+      simulation.alpha(0.1).restart();
     },
   };
 }
