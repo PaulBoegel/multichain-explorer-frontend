@@ -1,8 +1,13 @@
 import { gql } from "@apollo/client";
 
 export const BLOCKS = gql`
-  query blocks($chainId: Int, $height: Int) {
-    blocks(chainId: $chainId, height: $height) {
+  query blocks($chainId: Int, $height: Int, $pageSize: Int, $page: Int) {
+    blocks(
+      chainId: $chainId
+      height: $height
+      pageSize: $pageSize
+      page: $page
+    ) {
       hash
       height
       mined
@@ -25,8 +30,13 @@ export const BLOCKS = gql`
 `;
 
 export const TRANSACTIONS = gql`
-  query transactions($chainId: Int, $txid: String) {
-    transactions(chainId: $chainId, txid: $txid) {
+  query transactions($chainId: Int, $txid: String, $pageSize: Int, $page: Int) {
+    transactions(
+      chainId: $chainId
+      txid: $txid
+      pageSize: $pageSize
+      page: $page
+    ) {
       hash
       height
       mined
@@ -49,8 +59,13 @@ export const TRANSACTIONS = gql`
 `;
 
 export const ADDRESS = gql`
-  query address($chainId: Int, $address: String) {
-    address(chainId: $chainId, address: $address) {
+  query address($chainId: Int, $address: String, $pageSize: Int, $page: Int) {
+    address(
+      chainId: $chainId
+      address: $address
+      pageSize: $pageSize
+      page: $page
+    ) {
       hash
       height
       mined

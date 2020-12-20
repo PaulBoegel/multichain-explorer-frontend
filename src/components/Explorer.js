@@ -205,17 +205,32 @@ export default function Explorer({
       case 1:
         return {
           query: TRANSACTIONS,
-          variables: { chainId: chainId, txid: searchTxid },
+          variables: {
+            chainId: chainId,
+            txid: searchTxid,
+            pageSize: 100,
+            page: 0,
+          },
         };
       case 2:
         return {
           query: ADDRESS,
-          variables: { chainId: chainId, address: searchAddress },
+          variables: {
+            chainId: chainId,
+            address: searchAddress,
+            pageSize: 100,
+            page: 0,
+          },
         };
       default:
         return {
           query: BLOCKS,
-          variables: { chainId: chainId, height: searchHeight },
+          variables: {
+            chainId: chainId,
+            height: searchHeight,
+            pageSize: 100,
+            page: 0,
+          },
         };
     }
   };
