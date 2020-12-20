@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AddressRelations.css";
 
-export default function AddressRelations({
-  visible,
-  relations,
-  onRelationClicked,
-}) {
-  const [isVisible, setIsVisible] = useState(null);
+export default function AddressRelations({ relations, onRelationClicked }) {
   const [inContainer, setFromContainer] = useState([]);
   const [outContainer, setToContainer] = useState([]);
 
@@ -58,10 +53,6 @@ export default function AddressRelations({
   };
 
   useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
-
-  useEffect(() => {
     if (!relations || relations.length === 0) return null;
     const inContainer = fillContainer({
       relations: relations[0],
@@ -74,8 +65,6 @@ export default function AddressRelations({
     setToContainer(outContainer);
   }, [relations]);
 
-  if (!isVisible) return null;
-  if (!relations) return null;
   return (
     <div className="address-relations-grid">
       <div className="address-relations-in">

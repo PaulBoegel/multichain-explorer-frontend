@@ -1,15 +1,9 @@
 import * as d3 from "d3";
 import styles from "./graph.module.css";
 
-export function runGraph(
-  container,
-  linksData,
-  nodesData,
-  nodeHoverTooltip,
-  handleNodeClicked
-) {
-  const links = linksData.map((d) => Object.assign({}, d));
-  const nodes = nodesData.map((d) => Object.assign({}, d));
+export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
+  let linksData = [];
+  let nodesData = [];
 
   const containerRect = container.getBoundingClientRect();
   const height = containerRect.height;
@@ -17,10 +11,6 @@ export function runGraph(
   const icon = (d) => {
     return d.letter;
   };
-
-  d3.selectAll("circle").remove();
-  d3.selectAll("line").remove();
-  d3.selectAll("text").remove();
 
   const drag = (simulation) => {
     const dragstarted = (event, d) => {
@@ -78,10 +68,10 @@ export function runGraph(
   };
 
   const simulation = d3
-    .forceSimulation(nodes)
+    .forceSimulation(nodesData)
     .force(
       "link",
-      d3.forceLink(links).id((d) => d.id)
+      d3.forceLink(linksData).id((d) => d.id)
     )
     .force("charge", d3.forceManyBody().strength(-1500))
     .force("x", d3.forceX())
@@ -103,31 +93,26 @@ export function runGraph(
     .attr("stroke", "#999")
     .attr("stroke-opacity", 1)
     .attr("stroke-width", "2px")
-    .selectAll("line")
-    .join("line")
-    .attr("stroke-width", (d) => Math.sqrt(d.value));
+    .selectAll("line");
 
   let node = svg
     .append("g")
     .attr("class", "entitys")
     .attr("stroke", "#fff")
     .attr("stroke-width", 2)
-    .selectAll("circle")
-    .join("circle")
     .attr("r", 20)
+    .selectAll("circle")
     .attr("data-id", (d) => d.id)
     .on("click", handleNodeClicked)
     .call(drag(simulation));
 
   let label = svg
     .append("g")
+    .attr("class", styles.label)
     .attr("class", "labels")
-    .selectAll("text")
-    .enter()
-    .append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
-    .attr("class", styles.label)
+    .selectAll("text")
     .text((d) => {
       return icon(d);
     })
@@ -174,42 +159,78 @@ export function runGraph(
     nodes: () => {
       return svg.node();
     },
-    setNodes: ({ links, nodes }) => {
+    setNodes: ({ links, nodes, chainId }) => {
+      nodesData.push(...nodes);
+      linksData.push(...links);
+
       let index = 0;
-      while (index < links.length) {
-        if (links[index].source?.id === undefined) {
-          links[index].linkId = `${links[index].source}-${links[index].target}`;
+      while (index < nodesData.length) {
+        if (nodesData[index].chainId === chainId) {
+          index++;
+          continue;
+        }
+        nodesData.splice(index, 1);
+      }
+
+      index = 0;
+      while (index < linksData.length) {
+        if (linksData[index].source?.id === undefined) {
+          linksData[
+            index
+          ].linkId = `${linksData[index].source}-${linksData[index].target}`;
           index++;
           continue;
         }
         const link = {
-          source: links[index].source.id,
-          target: links[index].target.id,
-          chainId: links[index].chainId,
-          linkId: `${links[index].source.id}-${links[index].target.id}`,
+          source: linksData[index].source.id,
+          target: linksData[index].target.id,
+          chainId: linksData[index].chainId,
+          linkId: `${linksData[index].source.id}-${linksData[index].target.id}`,
         };
-        links.splice(index, 1);
-        links.push(link);
+        linksData.splice(index, 1);
+        linksData.push(link);
+      }
+
+      index = 0;
+      while (index < linksData.length) {
+        if (linksData[index].chainId === chainId) {
+          index++;
+          continue;
+        }
+        linksData.splice(index, 1);
       }
 
       const linksSeen = new Set();
-      links = links.filter((link) => {
+      linksData = linksData.filter((link) => {
         const duplicatded = linksSeen.has(link.linkId);
         linksSeen.add(link.linkId);
         return !duplicatded;
       });
 
-      link = link.data(links);
+      const nodesSeen = new Set();
+      nodesData = nodesData.filter((node) => {
+        const duplicated = nodesSeen.has(node.id);
+        nodesSeen.add(node.id);
+        return !duplicated;
+      });
+
+      link.data(linksData).exit().remove();
+      node.data(nodesData).exit().remove();
+      label.data(nodesData).exit().remove();
+
+      link = link
+        .data(linksData)
+        .attr("stroke-width", (d) => Math.sqrt(d.value));
+
       const linkEnter = link
         .enter()
         .append("line")
         .attr("stroke-width", (d) => Math.sqrt(d.value));
 
       link = linkEnter.merge(link);
-      link.exit().remove();
 
       node = node
-        .data(nodes)
+        .data(nodesData)
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
         .attr("r", (d) => d.radius)
@@ -220,6 +241,7 @@ export function runGraph(
         .on("mouseout", () => {
           removeTooltip();
         });
+
       let nodeEnter = node
         .enter()
         .append("circle")
@@ -237,11 +259,11 @@ export function runGraph(
         });
 
       node = nodeEnter.merge(node);
-      node.exit().remove();
 
-      label = label.data(nodes).text((d) => {
+      label = label.data(nodesData).text((d) => {
         return icon(d);
       });
+
       const labelEnter = label
         .enter()
         .append("text")
@@ -258,11 +280,10 @@ export function runGraph(
         .call(drag(simulation));
 
       label = labelEnter.merge(label);
-      label.exit().remove();
 
-      simulation.nodes(nodes);
-      simulation.force("link").links(links);
-      simulation.alpha(0.3).restart();
+      simulation.nodes(nodesData);
+      simulation.force("link").links(linksData);
+      simulation.alpha(0.5).restart();
     },
   };
 }

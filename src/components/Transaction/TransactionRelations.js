@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./TransactionRelations.css";
 
-export default function TransactionRelations({
-  visible,
-  relations,
-  onRelationClicked,
-}) {
-  const [isVisible, setIsVisible] = useState(null);
+export default function TransactionRelations({ relations, onRelationClicked }) {
   const [fromContainer, setFromContainer] = useState([]);
   const [toContainer, setToContainer] = useState([]);
 
@@ -38,10 +33,6 @@ export default function TransactionRelations({
   };
 
   useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
-
-  useEffect(() => {
     if (!relations || relations.length === 0) return null;
     const fromContainer = fillContainer({
       relations: relations[0],
@@ -54,8 +45,6 @@ export default function TransactionRelations({
     setToContainer(toContainer);
   }, [relations]);
 
-  if (!isVisible) return null;
-  if (!relations) return null;
   return (
     <div className="transaction-relations-grid">
       <div className="transaction-relations-from">

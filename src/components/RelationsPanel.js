@@ -4,59 +4,39 @@ import TransactionRelations from "./Transaction/TransactionRelations";
 import AddressRelations from "./Address/AddressRelations";
 import "./RelationsPanel.css";
 
-export default function RelationsPanel({
-  visibleId,
-  blockRelations,
-  transactionRelations,
-  addressRelations,
-  onRelationClicked,
-}) {
-  const [blockVisible, setBlockVisible] = useState(false);
-  const [transactionVisible, setTransactionVisible] = useState(false);
-  const [addressVisible, setAddressVisible] = useState(false);
-
-  useEffect(() => {
-    setEntityVisibility(parseInt(visibleId));
-  }, [visibleId]);
-
-  const setEntityVisibility = (entityId) => {
-    switch (entityId) {
+export default function RelationsPanel({ entity, onRelationClicked }) {
+  const setRelationsPanel = () => {
+    if (!entity) return <span>loading ...</span>;
+    switch (entity.entityId) {
+      case 0:
+        return (
+          <BlockRelations
+            relations={entity.getRelations()}
+            onRelationClicked={onRelationClicked}
+          />
+        );
       case 1:
-        setBlockVisible(false);
-        setTransactionVisible(true);
-        setAddressVisible(false);
-        break;
+        return (
+          <TransactionRelations
+            relations={entity.getRelations()}
+            onRelationClicked={onRelationClicked}
+          />
+        );
       case 2:
-        setBlockVisible(false);
-        setTransactionVisible(false);
-        setAddressVisible(true);
-        break;
+        return (
+          <AddressRelations
+            relations={entity.getRelations()}
+            onRelationClicked={onRelationClicked}
+          />
+        );
       default:
-        setBlockVisible(true);
-        setTransactionVisible(false);
-        setAddressVisible(false);
+        return <span>loading ...</span>;
     }
   };
 
   return (
     <div className="relations-panel">
-      <div className="relations-panel-scroller">
-        <BlockRelations
-          visible={blockVisible}
-          relations={blockRelations}
-          onRelationClicked={onRelationClicked}
-        />
-        <TransactionRelations
-          visible={transactionVisible}
-          relations={transactionRelations}
-          onRelationClicked={onRelationClicked}
-        />
-        <AddressRelations
-          visible={addressVisible}
-          relations={addressRelations}
-          onRelationClicked={onRelationClicked}
-        />
-      </div>
+      <div className="relations-panel-scroller">{setRelationsPanel()}</div>
     </div>
   );
 }

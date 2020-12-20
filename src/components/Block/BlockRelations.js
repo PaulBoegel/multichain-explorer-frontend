@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./BlockRelations.css";
 
-export default function BlockRelations({
-  visible,
-  relations,
-  onRelationClicked,
-}) {
-  const [isVisible, setIsVisible] = useState(null);
+export default function BlockRelations({ relations, onRelationClicked }) {
   const [gridTemplateString, setGridTemplateString] = useState();
   const [blockContainer, setBlockContainer] = useState([]);
   const [containerCount, setContainerCount] = useState(
@@ -37,10 +32,6 @@ export default function BlockRelations({
   };
 
   useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
-
-  useEffect(() => {
     if (!relations) return null;
     const containers = fillContainer({ relations });
     let gridTemplateString = "";
@@ -64,8 +55,6 @@ export default function BlockRelations({
     );
   });
 
-  if (!isVisible) return null;
-  if (!relations) return null;
   return (
     <>
       <div className="relationsTitle">Transactions</div>

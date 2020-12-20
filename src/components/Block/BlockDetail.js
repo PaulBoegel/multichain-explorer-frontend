@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
 import "./BlockDetail.css";
 
-export default function BlockDetail({ visible, details }) {
-  const [isVisible, setIsVisible] = useState(null);
-  useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
-
-  if (!isVisible) return null;
-  if (!details) return null;
+export default function BlockDetail({ details }) {
   return (
     <div className="block-details-grid">
       <div className="block-details-border-left"></div>

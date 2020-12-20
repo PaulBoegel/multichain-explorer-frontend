@@ -3,30 +3,29 @@ import { runGraph } from "./graphGenerator";
 import styles from "./graph.module.css";
 
 export default function Graph({
-  linksData,
-  nodesData,
+  entity,
+  chainId,
   nodeHoverTooltip,
   handleNodeClicked,
 }) {
   const containerRef = useRef(null);
   const [func, setFunc] = useState();
-  const [svgNodes, setSvgNodes] = useState();
 
   useEffect(() => {
-    if (func) func({ nodes: nodesData, links: linksData });
-  }, [nodesData]);
+    if (!entity) return;
+    const { nodes, links } = entity.getGraphData();
+    if (func) func({ nodes, links, chainId });
+  }, [entity]);
 
   useEffect(() => {
     let destroyFn;
 
     if (containerRef.current) {
-      const { destroy, setNodes } = runGraph(
-        containerRef.current,
-        linksData,
-        nodesData,
+      const { destroy, setNodes } = runGraph({
+        container: containerRef.current,
         nodeHoverTooltip,
-        handleNodeClicked
-      );
+        handleNodeClicked,
+      });
       setFunc(() => setNodes);
       destroyFn = destroy;
     }

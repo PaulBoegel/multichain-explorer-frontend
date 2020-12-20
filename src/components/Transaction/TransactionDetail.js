@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
 import "./TransactionDetail.css";
 
 export default function TransactionDetail({ visible, details }) {
-  const [isVisible, setIsVisible] = useState(null);
-  useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
-
-  if (!isVisible) return null;
-  if (!details) return null;
   return (
     <div className="transaction-details-grid">
       <div className="transaction-details-border-left"></div>

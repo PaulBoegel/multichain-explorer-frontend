@@ -8,21 +8,24 @@ export const BLOCKS = gql`
       pageSize: $pageSize
       page: $page
     ) {
-      hash
-      height
-      mined
-      parent
-      tx {
-        txid
-        from {
-          address
-          value
-          coinbase
-        }
-        to {
-          address
-          value
-          coinbase
+      size
+      blocks {
+        hash
+        height
+        mined
+        parent
+        tx {
+          txid
+          from {
+            address
+            value
+            coinbase
+          }
+          to {
+            address
+            value
+            coinbase
+          }
         }
       }
     }
@@ -37,21 +40,24 @@ export const TRANSACTIONS = gql`
       pageSize: $pageSize
       page: $page
     ) {
-      hash
-      height
-      mined
-      parent
-      tx {
-        txid
-        from {
-          address
-          value
-          coinbase
-        }
-        to {
-          address
-          value
-          coinbase
+      size
+      blocks {
+        hash
+        height
+        mined
+        parent
+        tx {
+          txid
+          from {
+            address
+            value
+            coinbase
+          }
+          to {
+            address
+            value
+            coinbase
+          }
         }
       }
     }
@@ -66,21 +72,24 @@ export const ADDRESS = gql`
       pageSize: $pageSize
       page: $page
     ) {
-      hash
-      height
-      mined
-      parent
-      tx {
-        txid
-        from {
-          address
-          value
-          coinbase
-        }
-        to {
-          address
-          value
-          coinbase
+      size
+      blocks {
+        hash
+        height
+        mined
+        parent
+        tx {
+          txid
+          from {
+            address
+            value
+            coinbase
+          }
+          to {
+            address
+            value
+            coinbase
+          }
         }
       }
     }
