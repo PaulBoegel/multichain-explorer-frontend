@@ -16,11 +16,13 @@ export default function ExplorerWraper({ serviceUrl }) {
     `,
     variables: { chainId },
   };
-  const { loading, data } = useQuery(request.query, {
+  const { loading, data, error } = useQuery(request.query, {
     variables: request.variables,
   });
 
   if (loading) return <div>loading ...</div>;
+
+  if (error) return <div>Verbindung zum Service nicht möglich ...</div>;
 
   return (
     <Explorer
