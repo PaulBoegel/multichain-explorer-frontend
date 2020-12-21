@@ -258,6 +258,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         .data(nodesData)
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
+        .attr("data-entity", (d) => d.entity)
         .attr("r", (d) => d.radius)
         .attr("class", (d) => {
           return `${styles[d.class]} ${d.active ? styles.active : ""}`;
@@ -278,6 +279,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         .attr("r", (d) => d.radius)
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
+        .attr("data-entity", (d) => d.entity)
         .on("click", handleNodeClicked)
         .call(drag(simulation))
         .on("mouseover", (event, d) => {
