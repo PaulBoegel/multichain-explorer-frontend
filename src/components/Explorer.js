@@ -71,6 +71,8 @@ export default function Explorer({
   onChainChanged: onBlockchainChanged,
   chainId,
 }) {
+  const [queryError, setQueryError] = useState(false);
+  const [queryLoading, setQueryLoading] = useState(false);
   const [entity, setEntity] = useState(null);
   const [nextBlocks, setNextBlocks] = useState(200);
   const [searchState, setSearchState] = useState({
@@ -79,7 +81,7 @@ export default function Explorer({
   });
   const [searchText, setSearchText] = useState("");
 
-  const { query, variables } = getEntityQuery(chainId, searchState);
+  const { query, variables, error } = getEntityQuery(chainId, searchState);
 
   const { loading, data } = useQuery(query, {
     variables,
@@ -88,8 +90,19 @@ export default function Explorer({
   let blockSize = 0;
 
   useEffect(() => {
+    setQueryError(true);
+  }, [error]);
+
+  useEffect(() => {
+    setQueryLoading(true);
+    console.log(queryLoading);
+  }, [loading]);
+
+  useEffect(() => {
     if (!data) return;
+    setQueryLoading(false);
     const blockList = getBlocks(data);
+    console.log(queryLoading);
     setEntity(
       getEntityObject({
         chainId,
@@ -188,11 +201,11 @@ export default function Explorer({
   });
 
   const onNodeClicked = async (event) => {
-    const { id, chain } = event.target.dataset;
+    const { id, entity } = event.target.dataset;
     const isCoinbase = id.split("coinbase").length === 2;
     if (isCoinbase) return;
-    const entityId = await CallSearchEntity(id, chain);
-    searchEntity(entityId, id);
+    // const entityId = await CallSearchEntity(id, chain);
+    searchEntity(parseInt(entity), id);
   };
 
   const onNextBlocks = (event) => {
@@ -205,6 +218,7 @@ export default function Explorer({
       <div className="border-left"></div>
       <div className="border-right"></div>
       <SearchPanel
+        loading={queryLoading}
         selected={chainId}
         searchText={searchText}
         blockchainOptions={blockchainOptions}
@@ -214,17 +228,24 @@ export default function Explorer({
       <div className="first-horizontal-border"></div>
       <FilterPanel />
       <div className="second-horizontal-border"></div>
-      <DetailPanel entity={entity} />
+      <DetailPanel entity={entity} loading={queryLoading} error={queryError} />
       <div className="graph-panel">
         {/* <button onClick={onNextBlocks}>{blockSize} remaining</button> */}
         <Graph
+          loading={queryLoading}
+          error={queryError}
           chainId={chainId}
           entity={entity}
           nodeHoverTooltip={nodeHoverTooltip}
           handleNodeClicked={onNodeClicked}
         />
       </div>
-      <RelationsPanel entity={entity} onRelationClicked={onRelationClicked} />
+      <RelationsPanel
+        entity={entity}
+        onRelationClicked={onRelationClicked}
+        loading={queryLoading}
+        error={queryError}
+      />
       <div className="border-bottom"></div>
     </div>
   );

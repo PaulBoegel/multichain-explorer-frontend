@@ -65,3 +65,10 @@ circle.active {
 .label.coinbase {
   font-size: 20px;
 }
+
+.show {
+  display: block;
+}
+.hide {
+  display: none;
+}
