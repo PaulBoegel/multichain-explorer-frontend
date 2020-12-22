@@ -6,8 +6,34 @@ export default function AddressFilter({
   onInMinChange,
   onOutMaxChange,
   onOutMinChange,
+  onKeyDown,
 }) {
   const [isVisible, setIsVisible] = useState(null);
+  const [inMax, setInMax] = useState(1000000);
+  const [inMin, setInMin] = useState(0);
+  const [outMax, setOutMax] = useState(1000000);
+  const [outMin, setOutMin] = useState(0);
+
+  const onInMaxValueChange = (event) => {
+    setInMax(event.target.value);
+    onInMaxChange(event);
+  };
+
+  const onInMinValueChange = (event) => {
+    setInMin(event.target.value);
+    onInMaxChange(event);
+  };
+
+  const onOutMaxValueChange = (event) => {
+    setOutMax(event.target.value);
+    onInMaxChange(event);
+  };
+
+  const onOutMinValueChange = (event) => {
+    setOutMin(event.target.value);
+    onInMaxChange(event);
+  };
+
   useEffect(() => {
     setIsVisible(visible);
   }, [visible]);
@@ -19,17 +45,37 @@ export default function AddressFilter({
       <div className="address-filter-border-top"></div>
       <div className="address-filter-border-left"></div>
       <div className="address-filter-from">
-        <label>In Max:</label>
-        <input type="text" onChange={onInMaxChange} />
         <label>In Min:</label>
-        <input type="text" onChange={onInMinChange} />
+        <input
+          type="text"
+          value={inMin}
+          onChange={onInMinValueChange}
+          onKeyDown={onKeyDown}
+        />
+        <label>In Max:</label>
+        <input
+          type="text"
+          value={inMax}
+          onChange={onInMaxValueChange}
+          onKeyDown={onKeyDown}
+        />
       </div>
       <div className="address-filter-border-middle"></div>
       <div className="address-filter-to">
         <label>Out Max:</label>
-        <input type="text" onChange={onOutMaxChange} />
+        <input
+          type="text"
+          value={outMin}
+          onChange={onOutMinValueChange}
+          onKeyDown={onKeyDown}
+        />
         <label>Out Min:</label>
-        <input type="text" onChange={onOutMinChange} />
+        <input
+          type="text"
+          value={outMax}
+          onChange={onOutMaxValueChange}
+          onKeyDown={onKeyDown}
+        />
       </div>
       <div className="address-filter-border-bottom"></div>
     </div>

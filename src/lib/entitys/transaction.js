@@ -11,7 +11,15 @@ export default function TransactionFactory({ chainId, blockList, id }) {
     let nodes = [];
     let links = [];
 
-    nodes.push(pushTransaction(details.txid, chainId, true));
+    nodes.push(
+      pushTransaction(
+        details.txid,
+        chainId,
+        details.inputTotal,
+        details.outputTotal,
+        true
+      )
+    );
 
     nodes.push(pushBlock(details.block, chainId, false));
 
@@ -25,14 +33,16 @@ export default function TransactionFactory({ chainId, blockList, id }) {
     relations[0].forEach((addressObj) => {
       fromAdresses.push(
         ...addressObj.address.map((address) => {
-          return { addressId: address };
+          return { addressId: address, value: addressObj.value };
         })
       );
     });
 
     fromAdresses.forEach((from) => {
       if (from.addressId === "coinbase") {
-        nodes.push(pushCoinbase(`${from.addressId}-${details.txid}`, chainId));
+        nodes.push(
+          pushCoinbase(`${from.addressId}-${details.txid}`, chainId, from.value)
+        );
 
         links.push({
           source: `${from.addressId}-${details.txid}`,
@@ -41,7 +51,15 @@ export default function TransactionFactory({ chainId, blockList, id }) {
         });
         return;
       }
-      nodes.push(pushAddress(from.addressId, chainId, false));
+
+      nodes.push(
+        pushAddress({
+          id: from.addressId,
+          chainId,
+          outValue: from.value,
+          active: false,
+        })
+      );
 
       links.push({
         source: from.addressId,
@@ -53,18 +71,25 @@ export default function TransactionFactory({ chainId, blockList, id }) {
     const toAddress = [];
     relations[1].forEach((addressObj) => {
       if (!addressObj.address) {
-        toAddress.push({ addressId: "" });
+        toAddress.push({ addressId: "", value: addressObj.value });
         return;
       }
       toAddress.push(
         ...addressObj.address.map((address) => {
-          return { addressId: address };
+          return { addressId: address, value: addressObj.value };
         })
       );
     });
 
     toAddress.forEach((to) => {
-      nodes.push(pushAddress(to.addressId, chainId, false));
+      nodes.push(
+        pushAddress({
+          id: to.addressId,
+          chainId,
+          inValue: to.value,
+          active: false,
+        })
+      );
 
       links.push({
         source: details.txid,

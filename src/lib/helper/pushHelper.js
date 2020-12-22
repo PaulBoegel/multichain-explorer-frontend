@@ -12,7 +12,13 @@ export const pushBlock = (id, chainId, active = false) => {
   };
 };
 
-export const pushTransaction = (id, chainId, active = false) => {
+export const pushTransaction = (
+  id,
+  chainId,
+  fromValue,
+  toValue,
+  active = false
+) => {
   return {
     id: id,
     entity: 1,
@@ -22,11 +28,19 @@ export const pushTransaction = (id, chainId, active = false) => {
     form: "circle",
     radius: 25,
     chainId,
+    fromValue,
+    toValue,
     active,
   };
 };
 
-export const pushAddress = (id, chainId, active = false) => {
+export const pushAddress = ({
+  id,
+  chainId,
+  inValue = 0,
+  outValue = 0,
+  active = false,
+}) => {
   return {
     id,
     entity: 2,
@@ -35,6 +49,8 @@ export const pushAddress = (id, chainId, active = false) => {
     class: "address",
     form: "triangle",
     radius: 25,
+    inValue,
+    outValue,
     chainId,
     active,
   };

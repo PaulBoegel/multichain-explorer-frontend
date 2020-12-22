@@ -6,7 +6,7 @@ import "./RelationsPanel.css";
 
 export default function RelationsPanel({ entity, onRelationClicked }) {
   const setRelationsPanel = () => {
-    if (!entity) return <span>loading ...</span>;
+    if (!entity) return <span class="relationsLoading">loading ...</span>;
     switch (entity.entityId) {
       case 0:
         return (

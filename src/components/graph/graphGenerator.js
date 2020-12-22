@@ -4,6 +4,18 @@ import styles from "./graph.module.css";
 export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
   let linksData = [];
   let nodesData = [];
+  let transFilter = {
+    fromMin: 0,
+    fromMax: 1000000000,
+    toMin: 0,
+    toMax: 1000000000,
+  };
+  let addrFilter = {
+    inMin: 0,
+    inMax: 1000000000,
+    outMin: 0,
+    outMax: 1000000000,
+  };
 
   const containerRect = container.getBoundingClientRect();
   const height = containerRect.height;
@@ -179,9 +191,13 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     nodes: () => {
       return svg.node();
     },
-    setNodes: ({ links, nodes, chainId }) => {
-      nodesData.unshift(...nodes);
-      linksData.unshift(...links);
+    filterNodes: ({ transactionFilter, addressFilter }) => {
+      transFilter = transactionFilter;
+      addrFilter = addressFilter;
+    },
+    setNodes: ({ links = [], nodes = [], chainId }) => {
+      nodesData.push(...nodes);
+      linksData.push(...links);
 
       let index = 0;
       let activePassed = false;
@@ -239,12 +255,62 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         return !duplicated;
       });
 
-      link.data(linksData).exit().remove();
-      node.data(nodesData).exit().remove();
-      label.data(nodesData).exit().remove();
+      const filteredIds = [];
+      const filteredNodes = nodesData.filter((node) => {
+        let filtered = false;
+        if (node.entity === 1) {
+          if (node.fromValue > transFilter.fromMax) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.fromValue < transFilter.fromMin) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.toValue > transFilter.toMax) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.toValue < transFilter.toMin) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+        }
+        if (node.entity === 2) {
+          if (node.inValue > addrFilter.inMax) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.inValue < addrFilter.inMin) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.outValue > addrFilter.outMax) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+          if (node.outValue < addrFilter.outMin) {
+            filteredIds.push(node.id);
+            filtered = true;
+          }
+        }
+        return !filtered;
+      });
+
+      const filteredLinks = linksData.filter((link) => {
+        let filtered = false;
+        const sourceFound = filteredIds.includes(link.source);
+        const targetFound = filteredIds.includes(link.target);
+        if (sourceFound || targetFound) filtered = true;
+        return !filtered;
+      });
+
+      link.data(filteredLinks).exit().remove();
+      node.data(filteredNodes).exit().remove();
+      label.data(filteredNodes).exit().remove();
 
       link = link
-        .data(linksData)
+        .data(filteredLinks)
         .attr("stroke-width", (d) => Math.sqrt(d.value));
 
       const linkEnter = link
@@ -255,7 +321,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       link = linkEnter.merge(link);
 
       node = node
-        .data(nodesData)
+        .data(filteredNodes)
         .attr("data-id", (d) => d.id)
         .attr("data-chain", (d) => d.chainId)
         .attr("data-entity", (d) => d.entity)
@@ -291,7 +357,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
       node = nodeEnter.merge(node);
 
-      label = label.data(nodesData).text((d) => {
+      label = label.data(filteredNodes).text((d) => {
         return icon(d);
       });
 

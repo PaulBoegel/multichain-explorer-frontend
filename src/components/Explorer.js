@@ -75,6 +75,18 @@ export default function Explorer({
   const [queryLoading, setQueryLoading] = useState(false);
   const [entity, setEntity] = useState(null);
   const [nextBlocks, setNextBlocks] = useState(200);
+  const [transactionFilter, setTransactionFilter] = useState({
+    fromMin: 1000000000,
+    fromMax: 0,
+    toMin: 0,
+    toMax: 1000000000,
+  });
+  const [addressFilter, setAddressFilter] = useState({
+    inMin: 1000000000,
+    inMax: 0,
+    outMin: 1000000000,
+    outMax: 0,
+  });
   const [searchState, setSearchState] = useState({
     id: 0,
     value: initialHeight,
@@ -95,14 +107,12 @@ export default function Explorer({
 
   useEffect(() => {
     setQueryLoading(true);
-    console.log(queryLoading);
   }, [loading]);
 
   useEffect(() => {
     if (!data) return;
     setQueryLoading(false);
     const blockList = getBlocks(data);
-    console.log(queryLoading);
     setEntity(
       getEntityObject({
         chainId,
@@ -212,6 +222,11 @@ export default function Explorer({
     setNextBlocks(nextBlocks - 10);
   };
 
+  const setFilterValues = ({ transactionFilter, addressFilter }) => {
+    setTransactionFilter(Object.assign({}, transactionFilter));
+    setAddressFilter(Object.assign({}, addressFilter));
+  };
+
   return (
     <div className="explorer-grid">
       <div className="border-top"></div>
@@ -226,12 +241,14 @@ export default function Explorer({
         onSearchInputKeyDown={onSearchInputKeyDown}
       />
       <div className="first-horizontal-border"></div>
-      <FilterPanel />
+      <FilterPanel getFilterValues={setFilterValues} />
       <div className="second-horizontal-border"></div>
       <DetailPanel entity={entity} loading={queryLoading} error={queryError} />
       <div className="graph-panel">
         {/* <button onClick={onNextBlocks}>{blockSize} remaining</button> */}
         <Graph
+          transactionFilter={transactionFilter}
+          addressFilter={addressFilter}
           loading={queryLoading}
           error={queryError}
           chainId={chainId}

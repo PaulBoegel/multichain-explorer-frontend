@@ -1,0 +1,11 @@
+.detailLoading {
+  display: block;
+  color: #eee;
+  margin-top: 2vw;
+}
+
+@media (min-width: 850px) {
+  .detailLoading {
+    padding-top: 5px;
+  }
+}

@@ -33,7 +33,23 @@ export default function BlockFactory({ chainId, blockList, id }) {
     }
 
     relations.forEach((transaction) => {
-      nodes.push(pushTransaction(transaction.txid, chainId, false));
+      const formValue = parseFloat(
+        transaction.from
+          .reduce((curr, address) => {
+            return curr + address.value;
+          }, 0)
+          .toFixed(8)
+      );
+      const toValue = parseFloat(
+        transaction.to
+          .reduce((curr, address) => {
+            return curr + address.value;
+          }, 0)
+          .toFixed(8)
+      );
+      nodes.push(
+        pushTransaction(transaction.txid, chainId, formValue, toValue, false)
+      );
       links.push({
         target: details.height,
         source: transaction.txid,

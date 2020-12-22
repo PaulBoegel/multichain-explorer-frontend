@@ -26,6 +26,18 @@
   color: #eee;
 }
 
+.relationsLoading {
+  padding-top: 8vw;
+  display: Block;
+  color: #eee;
+}
+
+@media (min-width: 850px) {
+  .relationsLoading {
+    padding-top: 70px;
+  }
+}
+
 @media (min-width: 1000px) {
   .relationsTitle {
     top: 10px;

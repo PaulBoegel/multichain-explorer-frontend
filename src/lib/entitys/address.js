@@ -6,28 +6,36 @@ export default function AddressFactory({ chainId, blockList, id }) {
     let nodes = [];
     let links = [];
 
-    nodes.push(pushAddress(details.address, chainId, true));
+    nodes.push(
+      pushAddress({
+        id,
+        chainId,
+        inValue: details.inValue,
+        outValue: details.outValue,
+        active: true,
+      })
+    );
 
-    const inTransactions = relations[0].map((transaction) => transaction.txid);
-
-    inTransactions.forEach((txid) => {
-      nodes.push(pushTransaction(txid, chainId, false));
+    relations[0].forEach((transaction) => {
+      nodes.push(
+        pushTransaction(transaction.txid, chainId, 0, transaction.value, false)
+      );
 
       links.push({
-        source: txid,
+        source: transaction.txid,
         target: details.address,
         chainId,
       });
     });
 
-    const outTransactions = relations[1].map((transaction) => transaction.txid);
-
-    outTransactions.forEach((txid) => {
-      nodes.push(pushTransaction(txid, chainId, false));
+    relations[1].forEach((transaction) => {
+      nodes.push(
+        pushTransaction(transaction.txid, chainId, transaction.value, 0, false)
+      );
 
       links.push({
         source: details.address,
-        target: txid,
+        target: transaction.txid,
         chainId,
       });
     });
@@ -82,17 +90,22 @@ export default function AddressFactory({ chainId, blockList, id }) {
   const _createDetails = () => {
     let balance = 0;
 
-    balance += parseFloat(
+    let inValue = parseFloat(
       relations[0].reduce((prev, curr) => prev + curr.value, 0).toFixed(8)
     );
-    balance -= parseFloat(
+    let outValue = parseFloat(
       relations[1].reduce((prev, curr) => prev + curr.value, 0).toFixed(8)
     );
+
+    balance += inValue;
+    balance -= outValue;
 
     return {
       address: id,
       inTransactionCount: relations[0].length,
       outTransactionCount: relations[1].length,
+      inValue,
+      outValue,
       balance,
     };
   };

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { runGraph } from "./graphGenerator";
 import styles from "./graph.module.css";
-import { style } from "d3";
+import Spinner from "../images/graph-spinner.svg";
 
 export default function Graph({
   entity,
@@ -9,9 +9,18 @@ export default function Graph({
   nodeHoverTooltip,
   handleNodeClicked,
   loading,
+  transactionFilter,
+  addressFilter,
 }) {
   const containerRef = useRef(null);
   const [func, setFunc] = useState();
+  const [filterNodes, setFilterNodes] = useState();
+
+  useEffect(() => {
+    if (!transactionFilter && !addressFilter) return;
+    if (filterNodes) filterNodes({ transactionFilter, addressFilter });
+    if (func) func({ chainId });
+  }, [transactionFilter, addressFilter]);
 
   useEffect(() => {
     if (!entity) return;
@@ -23,11 +32,12 @@ export default function Graph({
     let destroyFn;
 
     if (containerRef.current) {
-      const { destroy, setNodes } = runGraph({
+      const { destroy, setNodes, filterNodes } = runGraph({
         container: containerRef.current,
         nodeHoverTooltip,
         handleNodeClicked,
       });
+      setFilterNodes(() => filterNodes);
       setFunc(() => setNodes);
       destroyFn = destroy;
     }
@@ -37,13 +47,15 @@ export default function Graph({
 
   return (
     <>
-      <div className={loading ? styles.show : styles.hide}>... loading</div>
+      <img
+        src={Spinner}
+        alt="spinner"
+        className={`${styles.spinner} ${loading ? styles.show : styles.hide}`}
+      />
       <div
         id="graph-container"
         ref={containerRef}
-        className={`${styles.container} ${
-          !loading ? styles.show : styles.hide
-        }`}
+        className={styles.container}
       ></div>
     </>
   );
