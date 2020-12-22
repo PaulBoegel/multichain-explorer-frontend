@@ -76,12 +76,20 @@ export default function AddressFactory({ chainId, blockList, id }) {
       if (!to) return;
       const relation = to.address?.find((adr) => adr === id);
       if (!relation) return;
+      const duplication = toTmp.find(
+        (tmp) => tmp.txid === to.txid && tmp.value === to.value
+      );
+      if (duplication) return;
       toTmp.push({ txid: to.txid, value: to.value });
     });
     fromArray.forEach((from) => {
       if (!from) return;
       const relation = from.address?.find((adr) => adr === id);
       if (!relation) return;
+      const duplication = fromTmp.find(
+        (tmp) => tmp.txid === from.txid && tmp.value === from.value
+      );
+      if (duplication) return;
       fromTmp.push({ txid: from.txid, value: from.value });
     });
     return [toTmp, fromTmp];

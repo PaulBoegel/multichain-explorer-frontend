@@ -196,17 +196,23 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       addrFilter = addressFilter;
     },
     setNodes: ({ links = [], nodes = [], chainId }) => {
+      let newActive;
+      if (nodes.length > 0) {
+        newActive = nodes.find((node) => node.active);
+        const oldActive = nodesData.find((node) => node.id === newActive.id);
+        if (oldActive) oldActive.active = true;
+      }
+
+      if (!newActive) newActive = nodesData.find((node) => node.active);
+
       nodesData.push(...nodes);
       linksData.push(...links);
 
       let index = 0;
-      let activePassed = false;
       while (index < nodesData.length) {
         if (nodesData[index].chainId === chainId) {
-          if (nodesData[index].active === true) {
-            if (activePassed === true) nodesData[index].active = false;
-            activePassed = true;
-          }
+          if (nodesData[index].id !== newActive.id)
+            nodesData[index].active = false;
           index++;
           continue;
         }
