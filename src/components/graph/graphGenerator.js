@@ -194,6 +194,19 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     return newActive;
   };
 
+  const _setNoneActiveNodes = ({ chainId, newActive, nodesData }) => {
+    let index = 0;
+    while (index < nodesData.length) {
+      if (nodesData[index].chainId === chainId) {
+        if (nodesData[index].id !== newActive.id)
+          nodesData[index].active = false;
+        index++;
+        continue;
+      }
+      nodesData.splice(index, 1);
+    }
+  };
+
   return {
     destroy: () => {
       simulation.stop();
@@ -213,18 +226,9 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       nodesData.push(...nodes);
       linksData.push(...links);
 
-      let index = 0;
-      while (index < nodesData.length) {
-        if (nodesData[index].chainId === chainId) {
-          if (nodesData[index].id !== newActive.id)
-            nodesData[index].active = false;
-          index++;
-          continue;
-        }
-        nodesData.splice(index, 1);
-      }
+      _setNoneActiveNodes({ chainId, newActive, nodesData });
 
-      index = 0;
+      let index = 0;
       while (index < linksData.length) {
         if (linksData[index].source?.id === undefined) {
           linksData[
