@@ -184,6 +184,16 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       .attr("viewBox", [-width / 2, -height / 2, width, height]);
   });
 
+  const _getNewActive = (nodes) => {
+    let newActive;
+    if (nodes.length > 0) {
+      newActive = nodes.find((node) => node.active);
+      const oldActive = nodesData.find((node) => node.id === newActive.id);
+      if (oldActive) oldActive.active = true;
+    }
+    return newActive;
+  };
+
   return {
     destroy: () => {
       simulation.stop();
@@ -196,12 +206,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       addrFilter = addressFilter;
     },
     setNodes: ({ links = [], nodes = [], chainId }) => {
-      let newActive;
-      if (nodes.length > 0) {
-        newActive = nodes.find((node) => node.active);
-        const oldActive = nodesData.find((node) => node.id === newActive.id);
-        if (oldActive) oldActive.active = true;
-      }
+      let newActive = _getNewActive(nodes);
 
       if (!newActive) newActive = nodesData.find((node) => node.active);
 
