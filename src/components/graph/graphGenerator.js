@@ -207,6 +207,27 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     }
   };
 
+  const _createLinkId = ({ source, target }) => {
+    return `${source}-${target}`;
+  };
+
+  const _formatLink = (link) => {
+    const { source, target, chainId } = link;
+    return {
+      source: source.id,
+      target: target.id,
+      chainId,
+      linkId: _createLinkId({ source, target }),
+    };
+  };
+
+  const _linkIsNotPartOfChain = (link, chainId) => {
+    return link.chainId === chainId ? false : true;
+  };
+
+  const _linkHasTheRightFormat = (link) => {
+    return link.source?.id === undefined ? true : false;
+  };
   return {
     destroy: () => {
       simulation.stop();
@@ -230,30 +251,20 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
       let index = 0;
       while (index < linksData.length) {
-        if (linksData[index].source?.id === undefined) {
-          linksData[
-            index
-          ].linkId = `${linksData[index].source}-${linksData[index].target}`;
+        const link = linksData[index];
+        if (_linkIsNotPartOfChain(link, chainId)) {
+          linksData.splice(index, 1);
+          continue;
+        }
+        if (_linkHasTheRightFormat(link)) {
+          const { source, target } = link;
+          link.linkId = _createLinkId({ source, target });
           index++;
           continue;
         }
-        const link = {
-          source: linksData[index].source.id,
-          target: linksData[index].target.id,
-          chainId: linksData[index].chainId,
-          linkId: `${linksData[index].source.id}-${linksData[index].target.id}`,
-        };
+        const formatedLink = _formatLink(link);
         linksData.splice(index, 1);
-        linksData.push(link);
-      }
-
-      index = 0;
-      while (index < linksData.length) {
-        if (linksData[index].chainId === chainId) {
-          index++;
-          continue;
-        }
-        linksData.splice(index, 1);
+        linksData.push(formatedLink);
       }
 
       const linksSeen = new Set();
