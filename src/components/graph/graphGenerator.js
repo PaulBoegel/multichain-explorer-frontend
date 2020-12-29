@@ -184,13 +184,14 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       .attr("viewBox", [-width / 2, -height / 2, width, height]);
   });
 
-  const _getNewActive = (nodes) => {
+  const _getNewActive = ({ newNodes, oldNodes }) => {
     let newActive;
-    if (nodes.length > 0) {
-      newActive = nodes.find((node) => node.active);
-      const oldActive = nodesData.find((node) => node.id === newActive.id);
+    if (newNodes.length > 0) {
+      newActive = newNodes.find((node) => node.active);
+      const oldActive = oldNodes.find((node) => node.id === newActive.id);
       if (oldActive) oldActive.active = true;
     }
+    if (!newActive) newActive = oldNodes.find((node) => node.active);
     return newActive;
   };
 
@@ -221,6 +222,24 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     };
   };
 
+  const _deleteDuplications = ({ nodesData, linksData }) => {
+    const linksSeen = new Set();
+    const cleanedLinks = linksData.filter((link) => {
+      const duplicatded = linksSeen.has(link.linkId);
+      linksSeen.add(link.linkId);
+      return !duplicatded;
+    });
+
+    const nodesSeen = new Set();
+    const cleanedNodes = nodesData.filter((node) => {
+      const duplicated = nodesSeen.has(node.id);
+      nodesSeen.add(node.id);
+      return !duplicated;
+    });
+
+    return { cleanedNodes, cleanedLinks };
+  };
+
   const _linkIsNotPartOfChain = (link, chainId) => {
     return link.chainId === chainId ? false : true;
   };
@@ -240,9 +259,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       addrFilter = addressFilter;
     },
     setNodes: ({ links = [], nodes = [], chainId }) => {
-      let newActive = _getNewActive(nodes);
-
-      if (!newActive) newActive = nodesData.find((node) => node.active);
+      let newActive = _getNewActive({ newNodes: nodes, oldNodes: nodesData });
 
       nodesData.push(...nodes);
       linksData.push(...links);
@@ -267,22 +284,13 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         linksData.push(formatedLink);
       }
 
-      const linksSeen = new Set();
-      linksData = linksData.filter((link) => {
-        const duplicatded = linksSeen.has(link.linkId);
-        linksSeen.add(link.linkId);
-        return !duplicatded;
-      });
-
-      const nodesSeen = new Set();
-      nodesData = nodesData.filter((node) => {
-        const duplicated = nodesSeen.has(node.id);
-        nodesSeen.add(node.id);
-        return !duplicated;
+      const { cleanedNodes, cleanedLinks } = _deleteDuplications({
+        nodesData,
+        linksData,
       });
 
       const filteredIds = [];
-      const filteredNodes = nodesData.filter((node) => {
+      const filteredNodes = cleanedNodes.filter((node) => {
         let filtered = false;
         if (node.entity === 1) {
           if (node.fromValue > transFilter.fromMax) {
@@ -323,7 +331,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
         return !filtered;
       });
 
-      const filteredLinks = linksData.filter((link) => {
+      const filteredLinks = cleanedLinks.filter((link) => {
         let filtered = false;
         const sourceFound = filteredIds.includes(link.source);
         const targetFound = filteredIds.includes(link.target);
@@ -404,8 +412,8 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
 
       label = labelEnter.merge(label);
 
-      simulation.nodes(nodesData);
-      simulation.force("link").links(linksData);
+      simulation.nodes(filteredNodes);
+      simulation.force("link").links(filteredLinks);
       simulation.alpha(0.1).restart();
     },
   };
