@@ -1,6 +1,6 @@
 import "./App.css";
 
-import ExplorerWraper from "./components/ExplorerWraper";
+import ExplorerInitializer from "./components/ExplorerInitializer";
 import {
   ApolloClient,
   ApolloProvider,
@@ -8,7 +8,8 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 
-const serviceUrl = "http://localhost:4000/graphql";
+const { SERVERPORT } = process.env;
+const serviceUrl = `http://localhost:${SERVERPORT}/graphql`;
 
 //Initializing Apollo Client
 const client = new ApolloClient({
@@ -24,7 +25,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <ApolloProvider client={client}>
-          <ExplorerWraper serviceUrl={serviceUrl} />
+          <ExplorerInitializer serviceUrl={serviceUrl} />
         </ApolloProvider>
       </header>
     </div>

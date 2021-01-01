@@ -37,7 +37,6 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     };
 
     const dragended = (event, d) => {
-      const isParent = linksData.find((link) => link.target.id === d.id);
       d.fx = null;
       d.fy = null;
       simulation.alphaTarget(0);
@@ -195,7 +194,7 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     return newActive;
   };
 
-  const _setNoneActiveNodes = ({ chainId, newActive, nodesData }) => {
+  const _flagNoneActiveNodes = ({ chainId, newActive, nodesData }) => {
     let index = 0;
     while (index < nodesData.length) {
       if (nodesData[index].chainId === chainId) {
@@ -240,6 +239,49 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
     return { cleanedNodes, cleanedLinks };
   };
 
+  const _prepareLinksData = ({ chainId, linksData }) => {
+    let index = 0;
+    while (index < linksData.length) {
+      const link = linksData[index];
+      if (_linkIsNotPartOfChain(link, chainId)) {
+        linksData.splice(index, 1);
+        continue;
+      }
+      if (_linkHasTheRightFormat(link)) {
+        const { source, target } = link;
+        link.linkId = _createLinkId({ source, target });
+        index++;
+        continue;
+      }
+      const formatedLink = _formatLink(link);
+      linksData.splice(index, 1);
+      linksData.push(formatedLink);
+    }
+  };
+
+  const _filterData = ({ nodes, links }) => {
+    const filteredIds = [];
+    const filteredNodes = nodes.filter((node) => {
+      let filtered = false;
+      if (node.entity === 1)
+        filtered = _checkWithTransactionFilter({ node, filteredIds });
+      if (node.entity === 2)
+        filtered = _checkWithAddressFilter({ node, filteredIds });
+
+      return !filtered;
+    });
+
+    const filteredLinks = links.filter((link) => {
+      let filtered = false;
+      const sourceFound = filteredIds.includes(link.source);
+      const targetFound = filteredIds.includes(link.target);
+      if (sourceFound || targetFound) filtered = true;
+      return !filtered;
+    });
+
+    return { filteredLinks, filteredNodes };
+  };
+
   const _linkIsNotPartOfChain = (link, chainId) => {
     return link.chainId === chainId ? false : true;
   };
@@ -247,6 +289,45 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
   const _linkHasTheRightFormat = (link) => {
     return link.source?.id === undefined ? true : false;
   };
+
+  const _checkWithTransactionFilter = ({ node, filteredIds }) => {
+    if (node.fromValue > transFilter.fromMax) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.fromValue < transFilter.fromMin) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.toValue > transFilter.toMax) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.toValue < transFilter.toMin) {
+      filteredIds.push(node.id);
+      return true;
+    }
+  };
+
+  const _checkWithAddressFilter = ({ node, filteredIds }) => {
+    if (node.inValue > addrFilter.inMax) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.inValue < addrFilter.inMin) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.outValue > addrFilter.outMax) {
+      filteredIds.push(node.id);
+      return true;
+    }
+    if (node.outValue < addrFilter.outMin) {
+      filteredIds.push(node.id);
+      return true;
+    }
+  };
+
   return {
     destroy: () => {
       simulation.stop();
@@ -264,79 +345,17 @@ export function runGraph({ container, nodeHoverTooltip, handleNodeClicked }) {
       nodesData.push(...nodes);
       linksData.push(...links);
 
-      _setNoneActiveNodes({ chainId, newActive, nodesData });
-
-      let index = 0;
-      while (index < linksData.length) {
-        const link = linksData[index];
-        if (_linkIsNotPartOfChain(link, chainId)) {
-          linksData.splice(index, 1);
-          continue;
-        }
-        if (_linkHasTheRightFormat(link)) {
-          const { source, target } = link;
-          link.linkId = _createLinkId({ source, target });
-          index++;
-          continue;
-        }
-        const formatedLink = _formatLink(link);
-        linksData.splice(index, 1);
-        linksData.push(formatedLink);
-      }
+      _flagNoneActiveNodes({ chainId, newActive, nodesData });
+      _prepareLinksData({ chainId, linksData });
 
       const { cleanedNodes, cleanedLinks } = _deleteDuplications({
         nodesData,
         linksData,
       });
 
-      const filteredIds = [];
-      const filteredNodes = cleanedNodes.filter((node) => {
-        let filtered = false;
-        if (node.entity === 1) {
-          if (node.fromValue > transFilter.fromMax) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.fromValue < transFilter.fromMin) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.toValue > transFilter.toMax) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.toValue < transFilter.toMin) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-        }
-        if (node.entity === 2) {
-          if (node.inValue > addrFilter.inMax) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.inValue < addrFilter.inMin) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.outValue > addrFilter.outMax) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-          if (node.outValue < addrFilter.outMin) {
-            filteredIds.push(node.id);
-            filtered = true;
-          }
-        }
-        return !filtered;
-      });
-
-      const filteredLinks = cleanedLinks.filter((link) => {
-        let filtered = false;
-        const sourceFound = filteredIds.includes(link.source);
-        const targetFound = filteredIds.includes(link.target);
-        if (sourceFound || targetFound) filtered = true;
-        return !filtered;
+      const { filteredLinks, filteredNodes } = _filterData({
+        nodes: cleanedNodes,
+        links: cleanedLinks,
       });
 
       link.data(filteredLinks).exit().remove();

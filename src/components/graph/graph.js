@@ -13,19 +13,19 @@ export default function Graph({
   addressFilter,
 }) {
   const containerRef = useRef(null);
-  const [func, setFunc] = useState();
+  const [newNodes, setNewNodes] = useState();
   const [filterNodes, setFilterNodes] = useState();
 
   useEffect(() => {
     if (!transactionFilter && !addressFilter) return;
     if (filterNodes) filterNodes({ transactionFilter, addressFilter });
-    if (func) func({ chainId });
+    if (newNodes) newNodes({ chainId });
   }, [transactionFilter, addressFilter]);
 
   useEffect(() => {
     if (!entity) return;
     const { nodes, links } = entity.getGraphData();
-    if (func) func({ nodes, links, chainId });
+    if (newNodes) newNodes({ nodes, links, chainId });
   }, [entity]);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function Graph({
         handleNodeClicked,
       });
       setFilterNodes(() => filterNodes);
-      setFunc(() => setNodes);
+      setNewNodes(() => setNodes);
       destroyFn = destroy;
     }
 

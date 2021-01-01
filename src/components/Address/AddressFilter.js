@@ -21,17 +21,17 @@ export default function AddressFilter({
 
   const onInMinValueChange = (event) => {
     setInMin(event.target.value);
-    onInMaxChange(event);
+    onInMinChange(event);
   };
 
   const onOutMaxValueChange = (event) => {
     setOutMax(event.target.value);
-    onInMaxChange(event);
+    onOutMaxChange(event);
   };
 
   const onOutMinValueChange = (event) => {
     setOutMin(event.target.value);
-    onInMaxChange(event);
+    onOutMinChange(event);
   };
 
   useEffect(() => {
@@ -62,14 +62,14 @@ export default function AddressFilter({
       </div>
       <div className="address-filter-border-middle"></div>
       <div className="address-filter-to">
-        <label>Out Max:</label>
+        <label>Out Min:</label>
         <input
           type="text"
           value={outMin}
           onChange={onOutMinValueChange}
           onKeyDown={onKeyDown}
         />
-        <label>Out Min:</label>
+        <label>Out Max:</label>
         <input
           type="text"
           value={outMax}

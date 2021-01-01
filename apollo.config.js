@@ -1,7 +1,8 @@
+const { SERVERPORT } = process.env;
 module.exports = {
   client: {
     service: {
-      url: "http://localhost:4000/graphql",
+      url: `http://localhost:${SERVERPORT}/graphql`,
       //local copy can be downloaded using localSchemaFile
       skipSSLValidation: true,
     },

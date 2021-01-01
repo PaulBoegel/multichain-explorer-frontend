@@ -2,7 +2,7 @@ import Explorer from "./Explorer";
 import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 
-export default function ExplorerWraper({ serviceUrl }) {
+export default function ExplorerInitializer({ serviceUrl }) {
   const [chainId, setChainId] = useState(0);
   const handleChainChanged = (event) => {
     setChainId(parseInt(event.target.value));
