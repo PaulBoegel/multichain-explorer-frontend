@@ -1,5 +1,5 @@
 import "./App.css";
-
+import React from "react";
 import ExplorerInitializer from "./components/ExplorerInitializer";
 import {
   ApolloClient,
@@ -8,8 +8,8 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 
-const { SERVERPORT } = process.env;
-const serviceUrl = `http://localhost:${SERVERPORT}/graphql`;
+const { REACT_APP_SERVERPORT } = process.env;
+const serviceUrl = `http://localhost:${REACT_APP_SERVERPORT}/graphql`;
 
 //Initializing Apollo Client
 const client = new ApolloClient({
